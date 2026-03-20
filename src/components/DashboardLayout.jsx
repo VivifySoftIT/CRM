@@ -13,9 +13,9 @@ const DashboardLayout = () => {
     { icon: <TrendingUp size={20} />, label: "Event Bookings", path: "/dashboard/pipeline" },
     { icon: <Megaphone size={20} />, label: "Guest Marketing", path: "/dashboard/marketing" },
     { icon: <HelpCircle size={20} />, label: "Maintenance & Service", path: "/dashboard/support" },
-    { icon: <BarChart2 size={20} />, label: "Revenue & Occupancy", path: "/dashboard/analytics" },
-    { icon: <FileText size={20} />, label: "Invoices & Billing", path: "/dashboard/quotes" },
-    { icon: <Folder size={20} />, label: "Contracts & Folios", path: "/dashboard/documents" }
+    { icon: <BarChart2 size={20} />, label: 'Revenue & Occupancy', path: '/dashboard/analytics' },
+    { icon: <FileText size={20} />, label: 'Invoices & Billing', path: '/dashboard/quotes' },
+    { icon: <Folder size={20} />, label: 'Contracts & Folios', path: '/dashboard/documents' }
   ];
 
   return (

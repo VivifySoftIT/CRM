@@ -1,7 +1,8 @@
 import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
+import Login from './pages/Login'
 import DashboardLayout from './components/DashboardLayout'
+import SuperAdminLayout from './components/SuperAdminLayout'
 
 // Lazy load modules for performance
 const Contacts = lazy(() => import('./pages/modules/Contacts'))
@@ -21,13 +22,18 @@ const Contracts = lazy(() => import('./pages/modules/Contracts'))
 const Subscriptions = lazy(() => import('./pages/modules/Subscriptions'))
 const Feedback = lazy(() => import('./pages/modules/Feedback'))
 const Referrals = lazy(() => import('./pages/modules/Referrals'))
+const SuperAdmin = lazy(() => import('./pages/modules/SuperAdmin'))
 
 function App() {
   return (
     <Router>
       <Suspense fallback={<div className="loading">Loading...</div>}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          {/* ROOT IS NOW THE LOGIN PAGE */}
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          
+          {/* HOTEL ADMIN PORTAL (FOR SPECIFIC HOTEL ADMINS/STAFF) */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Navigate to="contacts" replace />} />
             <Route path="contacts" element={<Contacts />} />
@@ -47,6 +53,16 @@ function App() {
             <Route path="subscriptions" element={<Subscriptions />} />
             <Route path="feedback" element={<Feedback />} />
             <Route path="referrals" element={<Referrals />} />
+          </Route>
+
+          {/* SUPER ADMIN PORTAL (FOR PLATFORM OWNERS) */}
+          <Route path="/super-admin" element={<SuperAdminLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<SuperAdmin />} />
+            <Route path="companies" element={<SuperAdmin />} />
+            <Route path="plans" element={<SuperAdmin />} />
+            <Route path="status" element={<SuperAdmin />} />
+            <Route path="settings" element={<SuperAdmin />} />
           </Route>
         </Routes>
       </Suspense>
