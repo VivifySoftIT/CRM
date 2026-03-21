@@ -1,147 +1,234 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Mail, Lock, ArrowRight, Building2, User, Globe, Cpu, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Mail, Lock, ArrowRight, Sparkles, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [focused, setFocused] = useState('');
+  const navigate = useNavigate();
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setTimeout(() => {
+      if (email === 'admin@omnihotel.com') {
+        localStorage.setItem('userType', 'super_admin');
+        navigate('/super-admin/dashboard');
+      } else {
+        localStorage.setItem('userType', 'hotel_staff');
+        navigate('/dashboard/contacts');
+      }
+      setIsLoading(false);
+    }, 1200);
+  };
 
-        setTimeout(() => {
-            // Role Based Routing Logic
-            if (email === 'admin@omnihotel.com') {
-                localStorage.setItem('userType', 'super_admin');
-                navigate('/super-admin/dashboard');
-            } else {
-                localStorage.setItem('userType', 'hotel_staff');
-                navigate('/dashboard/contacts');
-            }
-            setIsLoading(false);
-        }, 1200);
-    };
+  const quickFill = (e) => setEmail(e);
 
-    return (
-        <div style={{ height: '100vh', width: '100vw', display: 'flex', overflow: 'hidden', background: '#f8fafc' }}>
-            {/* Left Side: Universal SaaS Branding */}
-            <div style={{ flex: 1.2, background: '#0f172a', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px', position: 'relative', overflow: 'hidden' }}>
-                {/* Modern subtle patterns */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-                <div style={{ position: 'absolute', top: '20%', left: '10%', width: '300px', height: '300px', background: '#4f46e5', borderRadius: '50%', filter: 'blur(120px)', opacity: 0.2 }} />
-                
-                <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} style={{ position: 'relative', zIndex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '48px' }}>
-                        <div style={{ background: 'linear-gradient(135deg, #6366f1, #ec4899)', width: '48px', height: '48px', borderRadius: '12px', display: 'grid', placeItems: 'center' }}>
-                            <ShieldCheck size={28} color="white" />
-                        </div>
-                        <span style={{ color: 'white', fontSize: '24px', fontWeight: '800', letterSpacing: '-1px' }}>OMNI<span style={{ color: '#818cf8' }}>OS</span></span>
-                    </div>
-                    
-                    <h1 style={{ color: 'white', fontSize: '64px', fontWeight: '800', lineHeight: 1, marginBottom: '24px', letterSpacing: '-3px' }}>
-                        The Future of <br/> Enterprise is <span style={{ background: 'linear-gradient(135deg, #818cf8, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Unified.</span>
-                    </h1>
-                    <p style={{ color: '#94a3b8', fontSize: '18px', maxWidth: '500px', lineHeight: 1.6, marginBottom: '48px' }}>
-                        A modular, multi-tenant ecosystem built for scale. Manage your entire global business infrastructure from a single, AI-integrated control plane.
-                    </p>
+  return (
+    <div style={{
+      minHeight: '100vh', width: '100vw', display: 'flex',
+      background: '#060612', fontFamily: "'Plus Jakarta Sans', sans-serif",
+      position: 'relative', overflow: 'hidden'
+    }}>
+      {/* ── Background effects ── */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '-15%', left: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)' }} />
+        <div style={{ position: 'absolute', bottom: '-15%', right: '30%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: '30%', right: '-5%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)' }} />
+        {/* Grid */}
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '64px 64px' }} />
+      </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', maxWidth: '500px' }}>
-                        {[
-                            { icon: <Globe size={20} />, title: "Global Scale", desc: "Multi-region tenant management." },
-                            { icon: <Cpu size={20} />, title: "AI Core", desc: "Automated business insights." },
-                            { icon: <Zap size={20} />, title: "Real-time", desc: "Live monitoring & analytics." },
-                            { icon: <ShieldCheck size={20} />, title: "Security", desc: "Enterprise-grade protection." }
-                        ].map((item, idx) => (
-                            <div key={idx} style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ color: '#818cf8', marginBottom: '12px' }}>{item.icon}</div>
-                                <h4 style={{ color: 'white', fontSize: '15px', fontWeight: '700', marginBottom: '4px' }}>{item.title}</h4>
-                                <p style={{ color: '#64748b', fontSize: '13px' }}>{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            </div>
+      {/* ── Left Panel ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 64px', position: 'relative', zIndex: 1 }}>
 
-            {/* Right Side: Login Form */}
-            <div style={{ flex: 1, background: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '100px', position: 'relative' }}>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: '400px', width: '100%', margin: '0 auto' }}>
-                    <div style={{ marginBottom: '48px' }}>
-                        <h2 style={{ fontSize: '36px', fontWeight: '800', color: '#0f172a', marginBottom: '12px', letterSpacing: '-1.5px' }}>Welcome back.</h2>
-                        <p style={{ color: '#64748b', fontSize: '16px' }}>Sign in to manage your organization.</p>
-                    </div>
+        {/* Logo */}
+        <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 56 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 12, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'grid', placeItems: 'center', boxShadow: '0 0 24px rgba(99,102,241,0.45)' }}>
+            <Sparkles size={20} color="white" />
+          </div>
+          <span style={{ color: 'white', fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px' }}>
+            OMNI<span style={{ color: '#818cf8' }}>OS</span>
+          </span>
+        </motion.div>
 
-                    <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em' }}>EMAIL ADDRESS</label>
-                            <div style={{ position: 'relative' }}>
-                                <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1' }} />
-                                <input 
-                                    type="email" required
-                                    placeholder="name@company.com"
-                                    value={email} onChange={e => setEmail(e.target.value)}
-                                    style={{ width: '100%', padding: '16px 16px 16px 48px', borderRadius: '14px', border: '1px solid #e2e8f0', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }}
-                                />
-                            </div>
-                        </div>
+        {/* Status pill */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.22)', borderRadius: 30, padding: '6px 14px', marginBottom: 28, width: 'fit-content' }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', display: 'inline-block', boxShadow: '0 0 6px #4ade80' }} />
+          <span style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em' }}>PLATFORM v2.0 — ALL SYSTEMS OPERATIONAL</span>
+        </motion.div>
 
-                        <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#94a3b8', marginBottom: '8px', letterSpacing: '0.05em' }}>PASSWORD</label>
-                            <div style={{ position: 'relative' }}>
-                                <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#cbd5e1' }} />
-                                <input 
-                                    type="password" required
-                                    placeholder="••••••••"
-                                    value={password} onChange={e => setPassword(e.target.value)}
-                                    style={{ width: '100%', padding: '16px 16px 16px 48px', borderRadius: '14px', border: '1px solid #e2e8f0', background: '#f8fafc', outline: 'none', fontSize: '15px', color: '#0f172a' }}
-                                />
-                            </div>
-                        </div>
+        {/* Headline */}
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6 }}
+          style={{ color: 'white', fontSize: 52, fontWeight: 800, lineHeight: 1.08, letterSpacing: '-2.5px', marginBottom: 20 }}>
+          The Future of<br />Enterprise is<br />
+          <span style={{ background: 'linear-gradient(135deg,#818cf8 0%,#c084fc 50%,#f472b6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Unified.
+          </span>
+        </motion.h1>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#64748b', cursor: 'pointer' }}>
-                                <input type="checkbox" style={{ accentColor: '#6366f1', width: '18px', height: '18px' }} /> Keep me signed in
-                            </label>
-                            <span style={{ fontSize: '14px', color: '#6366f1', fontWeight: '700', cursor: 'pointer' }}>Reset Password</span>
-                        </div>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}
+          style={{ color: '#475569', fontSize: 15, lineHeight: 1.75, maxWidth: 400, marginBottom: 48 }}>
+          A modular, multi-tenant ecosystem built for scale. Manage your entire global hotel infrastructure from a single AI-integrated control plane.
+        </motion.p>
 
-                        <button 
-                            type="submit" disabled={isLoading}
-                            className="btn-primary" 
-                            style={{ height: '56px', borderRadius: '14px', fontSize: '16px', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '800', background: '#0f172a', color: 'white' }}
-                        >
-                            {isLoading ? "Authenticating..." : (
-                                <>Sign in to Portal <ArrowRight size={20} /></>
-                            )}
-                        </button>
-                    </form>
-
-                    {/* Developer Console (Mock) */}
-                    <div style={{ marginTop: 'auto', paddingTop: '60px' }}>
-                        <p style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '0.08em' }}>Instant Access Mode (Demo)</p>
-                        <div style={{ display: 'flex', gap: '16px' }}>
-                            <div onClick={() => setEmail('admin@omnihotel.com')} style={{ flex: 1, cursor: 'pointer', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', textAlign: 'center' }}>
-                                <b>Super Admin</b>
-                            </div>
-                            <div onClick={() => setEmail('manager@grandomni.com')} style={{ flex: 1, cursor: 'pointer', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px', textAlign: 'center' }}>
-                                <b>Hotel Manager</b>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* Footer copyright */}
-                <div style={{ position: 'absolute', bottom: '40px', left: '100px', fontSize: '12px', color: '#94a3b8', display: 'flex', gap: '24px' }}>
-                    <span>© 2026 OmniOS Platform</span>
-                    <span>Privacy Policy</span>
-                    <span>Terms of Service</span>
-                </div>
-            </div>
+        {/* Feature list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {[
+            { dot: '#6366f1', text: 'Multi-region tenant management' },
+            { dot: '#8b5cf6', text: 'Real-time analytics & automation' },
+            { dot: '#a855f7', text: 'Enterprise-grade security layer' },
+          ].map((item, i) => (
+            <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.08 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.dot, boxShadow: `0 0 8px ${item.dot}`, flexShrink: 0 }} />
+              <span style={{ color: '#64748b', fontSize: 14, fontWeight: 500 }}>{item.text}</span>
+            </motion.div>
+          ))}
         </div>
-    );
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div style={{ width: 480, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 40px', position: 'relative', zIndex: 1 }}>
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ width: '100%' }}>
+
+          {/* Card */}
+          <div style={{
+            background: 'rgba(255,255,255,0.035)',
+            border: '1px solid rgba(255,255,255,0.09)',
+            borderRadius: 24,
+            padding: '40px 36px',
+            backdropFilter: 'blur(24px)',
+            boxShadow: '0 32px 64px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)'
+          }}>
+
+            {/* Card header */}
+            <div style={{ marginBottom: 32 }}>
+              <h2 style={{ color: 'white', fontSize: 28, fontWeight: 800, letterSpacing: '-1px', marginBottom: 6 }}>Welcome back.</h2>
+              <p style={{ color: '#475569', fontSize: 14 }}>Sign in to your control panel.</p>
+            </div>
+
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+
+              {/* Email */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Email Address</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: focused === 'email' ? '#818cf8' : '#334155', transition: 'color 0.2s', pointerEvents: 'none' }} />
+                  <input type="email" required value={email} placeholder="name@company.com"
+                    onChange={e => setEmail(e.target.value)}
+                    onFocus={() => setFocused('email')} onBlur={() => setFocused('')}
+                    style={{
+                      width: '100%', padding: '13px 14px 13px 42px', borderRadius: 12,
+                      border: `1.5px solid ${focused === 'email' ? 'rgba(129,140,248,0.6)' : 'rgba(255,255,255,0.08)'}`,
+                      background: focused === 'email' ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.04)',
+                      color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      boxShadow: focused === 'email' ? '0 0 0 3px rgba(99,102,241,0.12)' : 'none',
+                      transition: 'all 0.2s'
+                    }} />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: focused === 'password' ? '#818cf8' : '#334155', transition: 'color 0.2s', pointerEvents: 'none' }} />
+                  <input type={showPass ? 'text' : 'password'} required value={password} placeholder="••••••••••"
+                    onChange={e => setPassword(e.target.value)}
+                    onFocus={() => setFocused('password')} onBlur={() => setFocused('')}
+                    style={{
+                      width: '100%', padding: '13px 42px 13px 42px', borderRadius: 12,
+                      border: `1.5px solid ${focused === 'password' ? 'rgba(129,140,248,0.6)' : 'rgba(255,255,255,0.08)'}`,
+                      background: focused === 'password' ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.04)',
+                      color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      boxShadow: focused === 'password' ? '0 0 0 3px rgba(99,102,241,0.12)' : 'none',
+                      transition: 'all 0.2s'
+                    }} />
+                  <button type="button" onClick={() => setShowPass(s => !s)}
+                    style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#475569', padding: 0, display: 'flex' }}>
+                    {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember + Forgot */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569', cursor: 'pointer' }}>
+                  <input type="checkbox" style={{ accentColor: '#6366f1', width: 14, height: 14 }} />
+                  Keep me signed in
+                </label>
+                <span style={{ fontSize: 13, color: '#818cf8', fontWeight: 600, cursor: 'pointer' }}>Forgot password?</span>
+              </div>
+
+              {/* Submit */}
+              <motion.button type="submit" disabled={isLoading}
+                whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.985 }}
+                style={{
+                  height: 50, borderRadius: 12, border: 'none', cursor: isLoading ? 'not-allowed' : 'pointer',
+                  background: isLoading ? 'rgba(99,102,241,0.45)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                  color: 'white', fontSize: 15, fontWeight: 700,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  boxShadow: isLoading ? 'none' : '0 6px 24px rgba(99,102,241,0.4)',
+                  transition: 'all 0.2s', marginTop: 4
+                }}>
+                {isLoading ? (
+                  <>
+                    <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.75, ease: 'linear' }}
+                      style={{ width: 17, height: 17, border: '2px solid rgba(255,255,255,0.25)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block' }} />
+                    Authenticating...
+                  </>
+                ) : (
+                  <>Sign in to Portal <ArrowRight size={17} /></>
+                )}
+              </motion.button>
+            </form>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '24px 0 20px' }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#334155', letterSpacing: '0.06em' }}>QUICK ACCESS</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+            </div>
+
+            {/* Quick access buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {[
+                { label: 'Super Admin', email: 'admin@omnihotel.com', color: '#6366f1' },
+                { label: 'Hotel Manager', email: 'manager@grandomni.com', color: '#8b5cf6' },
+              ].map(item => (
+                <button key={item.label} type="button" onClick={() => quickFill(item.email)}
+                  style={{
+                    padding: '11px 14px', borderRadius: 11,
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.03)',
+                    color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    transition: 'all 0.18s', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2
+                  }}
+                  onMouseOver={e => { e.currentTarget.style.borderColor = `${item.color}55`; e.currentTarget.style.color = 'white'; e.currentTarget.style.background = `${item.color}10`; }}
+                  onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}>
+                  <span style={{ fontSize: 11, color: item.color, fontWeight: 800, letterSpacing: '0.04em' }}>DEMO</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <p style={{ textAlign: 'center', marginTop: 24, fontSize: 11, color: '#1e293b' }}>
+              © 2026 OmniOS Platform · <span style={{ color: '#334155', cursor: 'pointer' }}>Privacy</span> · <span style={{ color: '#334155', cursor: 'pointer' }}>Terms</span>
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

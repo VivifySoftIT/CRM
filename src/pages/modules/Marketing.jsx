@@ -47,21 +47,21 @@ const Marketing = () => {
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Send size={16} /> Total Subscribers</p>
                     <h3 style={{ fontSize: '32px' }}>18,450</h3>
                 </div>
-                <div className="glass-card" style={{ padding: '24px', background: 'white' }}>
+                <div className="glass-card" style={{ padding: '24px', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Eye size={16} color="var(--success)" /> Avg Open Rate</p>
                     <h3 style={{ fontSize: '32px' }}>41.2%</h3>
                 </div>
-                <div className="glass-card" style={{ padding: '24px', background: 'white' }}>
+                <div className="glass-card" style={{ padding: '24px', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><MousePointerClick size={16} color="var(--warning)" /> Avg Click Rate</p>
                     <h3 style={{ fontSize: '32px' }}>12.4%</h3>
                 </div>
-                <div className="glass-card" style={{ padding: '24px', background: 'white' }}>
+                <div className="glass-card" style={{ padding: '24px', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16} color="var(--primary)" /> Campaigns Sent</p>
                     <h3 style={{ fontSize: '32px' }}>24</h3>
                 </div>
             </div>
 
-            <div className="glass-card" style={{ padding: '32px', background: 'white' }}>
+            <div className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)' }}>
                 <h4 style={{ fontSize: '18px', marginBottom: '24px' }}>Recent Campaigns</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {campaigns.map(camp => (
@@ -174,3 +174,4 @@ const Marketing = () => {
 };
 
 export default Marketing;
+

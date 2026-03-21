@@ -1,19 +1,86 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-:root {
+/* ── Light theme (default) ── */
+:root, [data-theme="light"] {
   --primary: #4f46e5;
   --secondary: #ec4899;
   --accent: #8b5cf6;
-  --bg-dark: #f1f5f9;
+
+  --bg-page:   #f1f5f9;
   --bg-darker: #f8fafc;
-  --glass: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --text-primary: #0f172a;
+  --bg-dark:   #f1f5f9;
+
+  --sidebar-bg:      #ffffff;
+  --sidebar-border:  rgba(0,0,0,0.07);
+  --sidebar-text:    #475569;
+  --sidebar-active-bg: #4f46e5;
+  --sidebar-active-text: #ffffff;
+  --sidebar-hover-bg: rgba(79,70,229,0.06);
+
+  --header-bg:     #ffffff;
+  --header-border: #e2e8f0;
+
+  --card-bg:     #ffffff;
+  --card-border: #f1f5f9;
+  --card-shadow: 0 1px 6px rgba(0,0,0,0.06);
+
+  --glass:        rgba(255,255,255,0.85);
+  --glass-border: rgba(0,0,0,0.08);
+
+  --text-primary:   #0f172a;
   --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+
+  --input-bg:     #f8fafc;
+  --input-border: #e2e8f0;
+
   --success: #10b981;
   --warning: #f59e0b;
-  --danger: #ef4444;
-  --font-main: 'Plus Jakarta Sans', sans-serif;
+  --danger:  #ef4444;
+
+  --font-main:    'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --primary: #6366f1;
+  --secondary: #ec4899;
+  --accent: #8b5cf6;
+
+  --bg-page:   #0f172a;
+  --bg-darker: #0b1120;
+  --bg-dark:   #0f172a;
+
+  --sidebar-bg:      #0f172a;
+  --sidebar-border:  rgba(255,255,255,0.06);
+  --sidebar-text:    #94a3b8;
+  --sidebar-active-bg: #1e293b;
+  --sidebar-active-text: #ffffff;
+  --sidebar-hover-bg: rgba(255,255,255,0.05);
+
+  --header-bg:     #0f172a;
+  --header-border: rgba(255,255,255,0.07);
+
+  --card-bg:     #1e293b;
+  --card-border: rgba(255,255,255,0.07);
+  --card-shadow: 0 4px 20px rgba(0,0,0,0.3);
+
+  --glass:        rgba(30,41,59,0.9);
+  --glass-border: rgba(255,255,255,0.08);
+
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+
+  --input-bg:     rgba(255,255,255,0.05);
+  --input-border: rgba(255,255,255,0.1);
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger:  #ef4444;
+
+  --font-main:    'Plus Jakarta Sans', sans-serif;
   --font-heading: 'Outfit', sans-serif;
 }
 
@@ -25,10 +92,11 @@
 }
 
 body {
-  background: var(--bg-darker);
+  background: var(--bg-page);
   color: var(--text-primary);
   overflow-x: hidden;
   line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -43,7 +111,16 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.theme-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .gradient-text {

@@ -82,7 +82,7 @@ const Portal = () => {
                             <span style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>Live Preview</span>
                             <ExternalLink size={16} color="var(--primary)" />
                         </div>
-                        <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', height: '400px', border: '1px solid var(--glass-border)' }}>
+                        <div style={{ background: 'var(--card-bg)', borderRadius: '16px', overflow: 'hidden', height: '400px', border: '1px solid var(--glass-border)' }}>
                             {/* Fake Portal Header */}
                             <div style={{ padding: '16px', background: 'rgba(0, 0, 0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ width: '100px', height: '16px', background: 'var(--primary)', borderRadius: '4px' }} />

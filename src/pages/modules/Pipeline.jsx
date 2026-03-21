@@ -53,7 +53,7 @@ const Pipeline = () => {
                                             whileHover={{ y: -4, boxShadow: '0 8px 30px rgba(0,0,0,0.05)' }}
                                             key={deal.id} 
                                             className="glass-card" 
-                                            style={{ padding: '20px', cursor: 'grab', background: 'white' }}
+                                            style={{ padding: '20px', cursor: 'grab', background: 'var(--card-bg)' }}
                                         >
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                                 <h5 style={{ fontSize: '16px', fontWeight: '600' }}>{deal.title}</h5>
@@ -85,3 +85,4 @@ const Pipeline = () => {
 };
 
 export default Pipeline;
+

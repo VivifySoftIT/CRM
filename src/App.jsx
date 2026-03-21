@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login'
 import DashboardLayout from './components/DashboardLayout'
 import SuperAdminLayout from './components/SuperAdminLayout'
+import { ThemeProvider } from './context/ThemeContext'
 
 // Lazy load modules for performance
 const Contacts = lazy(() => import('./pages/modules/Contacts'))
@@ -23,12 +24,18 @@ const Subscriptions = lazy(() => import('./pages/modules/Subscriptions'))
 const Feedback = lazy(() => import('./pages/modules/Feedback'))
 const Referrals = lazy(() => import('./pages/modules/Referrals'))
 const SuperAdmin = lazy(() => import('./pages/modules/SuperAdmin'))
+const Companies = lazy(() => import('./pages/modules/Companies'))
+const Settings = lazy(() => import('./pages/modules/Settings'))
+const SuperAnalytics = lazy(() => import('./pages/modules/Analytics'))
+const SystemHealth = lazy(() => import('./pages/modules/SystemHealth'))
+const SubscriptionPlans = lazy(() => import('./pages/modules/SubscriptionPlans'))
 
 function App() {
   return (
-    <Router>
-      <Suspense fallback={<div className="loading">Loading...</div>}>
-        <Routes>
+    <ThemeProvider>
+      <Router>
+        <Suspense fallback={<div className="loading">Loading...</div>}>
+          <Routes>
           {/* ROOT IS NOW THE LOGIN PAGE */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Navigate to="/" replace />} />
@@ -59,14 +66,16 @@ function App() {
           <Route path="/super-admin" element={<SuperAdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<SuperAdmin />} />
-            <Route path="companies" element={<SuperAdmin />} />
-            <Route path="plans" element={<SuperAdmin />} />
-            <Route path="status" element={<SuperAdmin />} />
-            <Route path="settings" element={<SuperAdmin />} />
+            <Route path="companies" element={<Companies />} />
+            <Route path="plans" element={<SubscriptionPlans />} />
+            <Route path="status" element={<SystemHealth />} />
+            <Route path="analytics" element={<SuperAnalytics />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
-      </Suspense>
-    </Router>
+        </Suspense>
+      </Router>
+    </ThemeProvider>
   )
 }
 

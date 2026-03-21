@@ -51,8 +51,8 @@ const SuperAdmin = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <div>
-                            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>Platform Dashboard</h1>
-                            <p style={{ color: '#64748b' }}>OmniPlatform Global performance and statistics.</p>
+                            <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>Platform Dashboard</h1>
+                            <p style={{ color: 'var(--text-secondary)' }}>OmniPlatform Global performance and statistics.</p>
                         </div>
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <button className="btn-outline">Download Report</button>
@@ -67,18 +67,18 @@ const SuperAdmin = () => {
                             { label: "Active Guests", val: "8,250", sub: "Currently Checked-in", color: "#f59e0b", icon: <Users /> },
                             { label: "Platform Health", val: "99.9%", sub: "4 clusters operational", color: "#8b5cf6", icon: <Activity /> }
                         ].map((s, i) => (
-                            <div key={i} className="glass-card" style={{ padding: '24px', background: 'white', border: 'none' }}>
+                            <div key={i} className="glass-card" style={{ padding: '24px', background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                                 <div style={{ color: s.color, marginBottom: '16px' }}>{s.icon}</div>
                                 <h3 style={{ fontSize: '32px', marginBottom: '8px' }}>{s.val}</h3>
-                                <p style={{ fontWeight: '700', fontSize: '14px', color: '#1e293b' }}>{s.label}</p>
+                                <p style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>{s.label}</p>
                                 <p style={{ fontSize: '12px', color: '#94a3b8' }}>{s.sub}</p>
                             </div>
                         ))}
                     </div>
 
-                    <div className="glass-card" style={{ padding: '32px', background: 'white', border: 'none' }}>
+                    <div className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                         <h3 style={{ fontSize: '18px', marginBottom: '24px' }}>Revenue Sources</h3>
-                        <div style={{ height: '300px', width: '100%', background: '#f8fafc', borderRadius: '16px', display: 'grid', placeItems: 'center', color: '#94a3b8' }}>
+                        <div style={{ height: '300px', width: '100%', background: 'var(--bg-darker)', borderRadius: '16px', display: 'grid', placeItems: 'center', color: '#94a3b8' }}>
                             <p>Global Revenue Map Visualization Loading...</p>
                         </div>
                     </div>
@@ -91,26 +91,26 @@ const SuperAdmin = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <div>
-                            <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>Hotel Network</h1>
-                            <p style={{ color: '#64748b' }}>Provision and manage modules for your hotel clients.</p>
+                            <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>Hotel Network</h1>
+                            <p style={{ color: 'var(--text-secondary)' }}>Provision and manage modules for your hotel clients.</p>
                         </div>
                         <button onClick={() => setShowAddForm(true)} className="btn-primary"><Plus size={18} /> Register New Hotel</button>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: selectedCompany ? '1fr 380px' : '1fr', gap: '24px', transition: '0.3s' }}>
-                        <div className="glass-card" style={{ padding: '32px', background: 'white', border: 'none' }}>
+                        <div className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
-                                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9' }}>
-                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: '#64748b' }}>HOTEL IDENTITY</th>
-                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: '#64748b' }}>PLAN</th>
-                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: '#64748b' }}>STATUS</th>
-                                        <th style={{ textAlign: 'right', padding: '16px', fontSize: '12px', fontWeight: '800', color: '#64748b' }}>REVENUE</th>
+                                    <tr style={{ background: 'var(--bg-darker)', borderBottom: '1px solid var(--card-border)' }}>
+                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)' }}>HOTEL IDENTITY</th>
+                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)' }}>PLAN</th>
+                                        <th style={{ textAlign: 'left', padding: '16px', fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)' }}>STATUS</th>
+                                        <th style={{ textAlign: 'right', padding: '16px', fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)' }}>REVENUE</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {companies.map(c => (
-                                        <tr key={c.id} onClick={() => setSelectedCompany(c)} style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', background: selectedCompany?.id === c.id ? '#f5f3ff' : 'transparent' }}>
+                                        <tr key={c.id} onClick={() => setSelectedCompany(c)} style={{ borderBottom: '1px solid var(--card-border)', cursor: 'pointer', background: selectedCompany?.id === c.id ? 'rgba(99,102,241,0.08)' : 'transparent' }}>
                                             <td style={{ padding: '20px 16px' }}>
                                                 <p style={{ fontWeight: '700', fontSize: '15px' }}>{c.name}</p>
                                                 <p style={{ fontSize: '12px', color: '#94a3b8' }}>{c.location}</p>
@@ -128,7 +128,7 @@ const SuperAdmin = () => {
                             </table>
                         </div>
                         {selectedCompany && (
-                            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card" style={{ padding: '32px', background: 'white' }}>
+                            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)' }}>
                                 <h4 style={{ fontSize: '18px', marginBottom: '20px' }}>Plugin Overrides</h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     {allModules.map(mod => (
@@ -149,8 +149,8 @@ const SuperAdmin = () => {
             return (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <div style={{ marginBottom: '32px' }}>
-                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>Subscription Tiers</h1>
-                        <p style={{ color: '#64748b' }}>Configure pricing and module limits for your SaaS offerings.</p>
+                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>Subscription Tiers</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Configure pricing and module limits for your SaaS offerings.</p>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
@@ -159,12 +159,12 @@ const SuperAdmin = () => {
                             { name: "Pro", price: "$999/mo", features: ["3 Hotel Locations", "Full Marketing Suite", "Advanced Analytics", "Custom Subdomains"] },
                             { name: "Enterprise", price: "$2,450/mo", features: ["Unlimited Locations", "Whitelabeling", "Dedicated Account Manager", "Custom Integrations"] }
                         ].map((plan, i) => (
-                            <div key={i} className="glass-card" style={{ padding: '32px', background: 'white', border: i === 1 ? '2px solid #6366f1' : 'none' }}>
+                            <div key={i} className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)', border: i === 1 ? '2px solid #6366f1' : '1px solid var(--card-border)' }}>
                                 <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>{plan.name}</h3>
                                 <h2 style={{ fontSize: '32px', marginBottom: '24px' }}>{plan.price}</h2>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     {plan.features.map((f, fi) => (
-                                        <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: '#64748b' }}>
+                                        <div key={fi} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--text-secondary)' }}>
                                             <CheckCircle2 size={16} color="#10b981" /> {f}
                                         </div>
                                     ))}
@@ -181,8 +181,8 @@ const SuperAdmin = () => {
             return (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <div style={{ marginBottom: '32px' }}>
-                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>System Health Monitor</h1>
-                        <p style={{ color: '#64748b' }}>Real-time infrastructure and service status.</p>
+                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>System Health Monitor</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Real-time infrastructure and service status.</p>
                     </div>
 
                     <div className="glass-card" style={{ padding: '32px', background: '#0f172a', color: 'white' }}>
@@ -214,19 +214,19 @@ const SuperAdmin = () => {
             return (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     <div style={{ marginBottom: '32px' }}>
-                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '4px' }}>Global Platform Settings</h1>
-                        <p style={{ color: '#64748b' }}>Whitelabeling, domain management, and security policies.</p>
+                        <h1 style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>Global Platform Settings</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Whitelabeling, domain management, and security policies.</p>
                     </div>
 
-                    <div className="glass-card" style={{ padding: '32px', background: 'white', maxWidth: '600px' }}>
+                    <div className="glass-card" style={{ padding: '32px', background: 'var(--card-bg)', maxWidth: '600px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                             <div>
                                 <label style={{ display: 'block', fontWeight: '700', fontSize: '14px', marginBottom: '12px' }}>Platform Name</label>
-                                <input type="text" defaultValue="OmniHotel SaaS" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                                <input type="text" defaultValue="OmniHotel SaaS" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)' }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontWeight: '700', fontSize: '14px', marginBottom: '12px' }}>Support Email</label>
-                                <input type="email" defaultValue="support@omnihotel.io" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }} />
+                                <input type="email" defaultValue="support@omnihotel.io" style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)' }} />
                             </div>
                             <div style={{ padding: '20px', background: '#fff7ed', borderRadius: '12px', border: '1px solid #ffedd5' }}>
                                 <h4 style={{ color: '#c2410c', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}><ShieldAlert size={18} /> Maintenance Mode</h4>
@@ -250,23 +250,23 @@ const SuperAdmin = () => {
             <AnimatePresence>
                 {showAddForm && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'grid', placeItems: 'center', padding: '20px' }}>
-                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} style={{ background: 'white', width: '500px', borderRadius: '24px', padding: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.2)' }}>
+                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} style={{ background: 'var(--card-bg)', width: '500px', borderRadius: '24px', padding: '40px', boxShadow: '0 50px 100px rgba(0,0,0,0.2)' }}>
                             <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '8px' }}>Onboard New Hotel</h2>
-                             <p style={{ color: '#64748b', marginBottom: '32px' }}>Provision a new tenant on the platform.</p>
+                             <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Provision a new tenant on the platform.</p>
                             
                             <form onSubmit={handleAddHotel} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: '#64748b' }}>HOTEL NAME</label>
-                                        <input required type="text" placeholder="Grand Royal..." value={newHotel.name} onChange={e => setNewHotel({...newHotel, name: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', outline: 'none' }} />
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--text-secondary)' }}>HOTEL NAME</label>
+                                        <input required type="text" placeholder="Grand Royal..." value={newHotel.name} onChange={e => setNewHotel({...newHotel, name: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', outline: 'none' }} />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: '#64748b' }}>LOCATION</label>
-                                        <input required type="text" placeholder="Dubai, UAE" value={newHotel.location} onChange={e => setNewHotel({...newHotel, location: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', outline: 'none' }} />
+                                        <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '6px', color: 'var(--text-secondary)' }}>LOCATION</label>
+                                        <input required type="text" placeholder="Dubai, UAE" value={newHotel.location} onChange={e => setNewHotel({...newHotel, location: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', outline: 'none' }} />
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
-                                    <button type="button" onClick={() => setShowAddForm(false)} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'transparent', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
+                                    <button type="button" onClick={() => setShowAddForm(false)} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: '1px solid var(--input-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', fontWeight: '700', cursor: 'pointer' }}>Cancel</button>
                                     <button type="submit" className="btn-primary" style={{ flex: 2, padding: '14px', borderRadius: '12px', border: 'none', fontWeight: '700' }}>Confirm Provisioning</button>
                                 </div>
                             </form>
@@ -279,3 +279,4 @@ const SuperAdmin = () => {
 };
 
 export default SuperAdmin;
+

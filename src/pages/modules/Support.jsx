@@ -38,21 +38,21 @@ const Support = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
-                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--danger)', background: 'white' }}>
+                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--danger)', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} color="var(--danger)" /> Unresolved Critical</p>
                     <h3 style={{ fontSize: '32px' }}>3</h3>
                 </div>
-                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--warning)', background: 'white' }}>
+                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--warning)', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={16} color="var(--warning)" /> Pending Requests</p>
                     <h3 style={{ fontSize: '32px' }}>12</h3>
                 </div>
-                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--success)', background: 'white' }}>
+                <div className="glass-card" style={{ flex: 1, padding: '24px', borderLeft: '4px solid var(--success)', background: 'var(--card-bg)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}><CheckCircle size={16} color="var(--success)" /> Resolved Today</p>
                     <h3 style={{ fontSize: '32px' }}>45</h3>
                 </div>
             </div>
 
-            <div className="glass-card" style={{ overflow: 'hidden', background: 'white' }}>
+            <div className="glass-card" style={{ overflow: 'hidden', background: 'var(--card-bg)' }}>
                  <div style={{ display: 'flex', gap: '24px', padding: '24px', borderBottom: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.02)' }}>
                     {['All', 'Open', 'In Progress', 'Closed'].map(f => (
                         <span 
@@ -119,3 +119,4 @@ const Support = () => {
 };
 
 export default Support;
+

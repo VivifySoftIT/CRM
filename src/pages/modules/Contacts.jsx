@@ -20,7 +20,7 @@ const Contacts = () => {
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <div className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', minWidth: '300px', background: 'white' }}>
+                    <div className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', minWidth: '300px', background: 'var(--card-bg)' }}>
                         <Search size={18} color="var(--text-secondary)" />
                         <input 
                             type="text" 
@@ -62,7 +62,7 @@ const Contacts = () => {
                         whileHover={{ y: -4 }}
                         key={guest.id} 
                         className="glass-card" 
-                        style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', background: 'white' }}
+                        style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', background: 'var(--card-bg)' }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -108,3 +108,4 @@ const Contacts = () => {
 };
 
 export default Contacts;
+
