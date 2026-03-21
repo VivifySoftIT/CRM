@@ -444,23 +444,23 @@ const SubscriptionPlans = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
           {plans.map(plan => (
             <motion.div key={plan.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              style={{ background: 'var(--card-bg)', borderRadius: 20, border: `2px solid ${plan.color}30`, boxShadow: `0 4px 20px ${plan.color}12`, overflow: 'hidden', position: 'relative' }}>
+              style={{ background: 'var(--card-bg)', borderRadius: 20, border: `2px solid ${plan.color}30`, boxShadow: `0 4px 20px ${plan.color}12`, position: 'relative' }}>
               {/* Top accent */}
-              <div style={{ height: 5, background: `linear-gradient(90deg, ${plan.color}, ${plan.color}88)` }} />
+              <div style={{ height: 5, background: `linear-gradient(90deg, ${plan.color}, ${plan.color}88)`, borderRadius: '18px 18px 0 0' }} />
               <div style={{ padding: 24 }}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>{plan.name}</h3>
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+                      <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{plan.name}</h3>
                       {plan.badge && <Badge color={plan.color}>{plan.badge}</Badge>}
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{plan.description}</p>
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                      <button onClick={() => setPlanModal(plan)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid #e2e8f0', background: 'var(--card-bg)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><Edit2 size={13} color="#64748b" /></button>
+                      <button onClick={() => deletePlan(plan.id)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid #fee2e2', background: '#fff1f2', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><Trash2 size={13} color="#ef4444" /></button>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button onClick={() => setPlanModal(plan)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid #e2e8f0', background: 'var(--card-bg)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><Edit2 size={13} color="#64748b" /></button>
-                    <button onClick={() => deletePlan(plan.id)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid #fee2e2', background: '#fff1f2', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><Trash2 size={13} color="#ef4444" /></button>
-                  </div>
+                  <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{plan.description}</p>
                 </div>
 
                 {/* Price */}

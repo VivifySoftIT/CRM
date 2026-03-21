@@ -6,6 +6,7 @@ import {
   AlertTriangle, X, ChevronDown, ToggleLeft, ToggleRight,
   Plus, Trash2, Eye, EyeOff, Save, RefreshCw
 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 // ─── Reusable primitives ────────────────────────────────────────────────────
 
@@ -178,14 +179,19 @@ const PRESETS = [
 const COLOR_ROLES = ['Primary', 'Secondary', 'Accent', 'Background'];
 
 const ThemeColorPicker = () => {
-  const [palette, setPalette] = useState(['#6366f1','#ec4899','#8b5cf6','#f8fafc']);
-  const [activePreset, setActivePreset] = useState('Indigo');
+  const { brandColors, updateBrandColors } = useTheme();
+  const [palette, setPalette] = useState([
+    brandColors.primary, brandColors.secondary, brandColors.accent, '#f8fafc'
+  ]);
+  const [activePreset, setActivePreset] = useState(null);
   const [customColors, setCustomColors] = useState([]);
   const [newColor, setNewColor] = useState('#10b981');
 
   const applyPreset = (preset) => {
     setActivePreset(preset.name);
-    setPalette([...preset.colors]);
+    const next = [...preset.colors];
+    setPalette(next);
+    updateBrandColors({ primary: next[0], secondary: next[1], accent: next[2] });
   };
 
   const updateColor = (idx, val) => {
@@ -193,6 +199,8 @@ const ThemeColorPicker = () => {
     next[idx] = val;
     setPalette(next);
     setActivePreset(null);
+    const roleMap = ['primary', 'secondary', 'accent'];
+    if (roleMap[idx]) updateBrandColors({ [roleMap[idx]]: val });
   };
 
   const addCustomColor = () => {

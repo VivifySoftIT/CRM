@@ -13,8 +13,8 @@ const initialCompanies = [
     { id: 5, name: 'The Pinnacle Suites', owner: 'Carlos Ruiz', email: 'carlos@pinnaclesuites.mx', phone: '+52 55-555-0188', plan: 'Enterprise', status: 'Active', storageUsed: 18.3, storageLimit: 50, created: '2023-11-03', users: 38, revenue: '$2,450/mo', recentActivity: ['Contract signed', 'Bulk import completed', 'New module enabled'] },
 ];
 
-const inputStyle = { width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', outline: 'none', fontSize: '14px', boxSizing: 'border-box' };
-const labelStyle = { display: 'block', fontSize: '12px', fontWeight: '700', color: '#64748b', marginBottom: '6px', letterSpacing: '0.04em' };
+const inputStyle = { width: '100%', padding: '11px 14px', borderRadius: '10px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', outline: 'none', fontSize: '14px', boxSizing: 'border-box' };
+const labelStyle = { display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', letterSpacing: '0.04em' };
 
 const planColor = { Basic: '#64748b', Pro: '#6366f1', Enterprise: '#f59e0b' };
 const planBg = { Basic: '#f1f5f9', Pro: '#eef2ff', Enterprise: '#fffbeb' };
@@ -25,10 +25,10 @@ function StorageBar({ used, limit }) {
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '5px' }}>
-                <span style={{ color: '#64748b' }}>{used}GB / {limit}GB used</span>
+                <span style={{ color: 'var(--text-secondary)' }}>{used}GB / {limit}GB used</span>
                 <span style={{ fontWeight: '700', color }}>{Math.round(pct)}%</span>
             </div>
-            <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '99px', overflow: 'hidden' }}>
+            <div style={{ height: '6px', background: 'var(--card-border)', borderRadius: '99px', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: '99px', transition: 'width 0.4s' }} />
             </div>
             {pct >= 90 && <p style={{ fontSize: '11px', color: '#ef4444', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}><AlertTriangle size={11} /> Storage limit nearly reached</p>}
@@ -136,7 +136,7 @@ export default function Companies() {
             {/* Filters */}
             <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
-                    <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
                     <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search by company name or email..." style={{ ...inputStyle, paddingLeft: '40px' }} />
                 </div>
                 <select value={filterPlan} onChange={e => { setFilterPlan(e.target.value); setPage(1); }} style={{ ...inputStyle, width: 'auto', paddingRight: '32px', cursor: 'pointer' }}>
@@ -151,33 +151,33 @@ export default function Companies() {
             </div>
 
             {/* Table */}
-            <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', marginBottom: '24px' }}>
+            <div style={{ background: 'var(--card-bg)', borderRadius: '16px', border: '1px solid var(--card-border)', overflow: 'hidden', marginBottom: '24px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
-                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                        <tr style={{ background: 'var(--bg-darker)', borderBottom: '1px solid var(--card-border)' }}>
                             {['Company Name', 'Owner', 'Email', 'Plan', 'Status', 'Storage', 'Created', 'Actions'].map(h => (
-                                <th key={h} style={{ padding: '14px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h.toUpperCase()}</th>
+                                <th key={h} style={{ padding: '14px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h.toUpperCase()}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
                         {paginated.length === 0 && (
-                            <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>No companies found.</td></tr>
+                            <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: 'var(--text-secondary)' }}>No companies found.</td></tr>
                         )}
                         {paginated.map((c, i) => (
-                            <tr key={c.id} style={{ borderBottom: i < paginated.length - 1 ? '1px solid #f1f5f9' : 'none', transition: 'background 0.15s' }}
-                                onMouseOver={e => e.currentTarget.style.background = '#fafafa'}
+                            <tr key={c.id} style={{ borderBottom: i < paginated.length - 1 ? '1px solid var(--card-border)' : 'none', transition: 'background 0.15s' }}
+                                onMouseOver={e => e.currentTarget.style.background = 'var(--bg-darker)'}
                                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
                                 <td style={{ padding: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#eef2ff', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
                                             <Building2 size={18} color="#6366f1" />
                                         </div>
-                                        <span style={{ fontWeight: '700', fontSize: '14px', color: '#0f172a' }}>{c.name}</span>
+                                        <span style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-primary)' }}>{c.name}</span>
                                     </div>
                                 </td>
-                                <td style={{ padding: '16px', fontSize: '14px', color: '#334155' }}>{c.owner}</td>
-                                <td style={{ padding: '16px', fontSize: '13px', color: '#64748b' }}>{c.email}</td>
+                                <td style={{ padding: '16px', fontSize: '14px', color: 'var(--text-primary)' }}>{c.owner}</td>
+                                <td style={{ padding: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}>{c.email}</td>
                                 <td style={{ padding: '16px' }}>
                                     <span style={{ fontSize: '12px', fontWeight: '800', padding: '4px 10px', borderRadius: '20px', background: planBg[c.plan], color: planColor[c.plan] }}>{c.plan}</span>
                                 </td>
@@ -189,13 +189,13 @@ export default function Companies() {
                                 <td style={{ padding: '16px', minWidth: '140px' }}>
                                     <StorageBar used={c.storageUsed} limit={c.storageLimit} />
                                 </td>
-                                <td style={{ padding: '16px', fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap' }}>{c.created}</td>
+                                <td style={{ padding: '16px', fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{c.created}</td>
                                 <td style={{ padding: '16px' }}>
                                     <div style={{ display: 'flex', gap: '6px' }}>
-                                        <button onClick={() => setViewCompany(c)} title="View" style={{ padding: '7px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Eye size={15} color="#6366f1" /></button>
-                                        <button onClick={() => setEditCompany({ ...c })} title="Edit" style={{ padding: '7px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Edit2 size={15} color="#64748b" /></button>
+                                        <button onClick={() => setViewCompany(c)} title="View" style={{ padding: '7px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Eye size={15} color="#6366f1" /></button>
+                                        <button onClick={() => setEditCompany({ ...c })} title="Edit" style={{ padding: '7px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}><Edit2 size={15} color="var(--text-secondary)" /></button>
                                         <button onClick={() => setConfirmAction({ company: c, action: c.status === 'Active' ? 'Suspended' : 'Active' })} title={c.status === 'Active' ? 'Suspend' : 'Activate'}
-                                            style={{ padding: '7px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', display: 'grid', placeItems: 'center' }}>
+                                            style={{ padding: '7px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', display: 'grid', placeItems: 'center' }}>
                                             {c.status === 'Active' ? <ToggleRight size={15} color="#10b981" /> : <ToggleLeft size={15} color="#ef4444" />}
                                         </button>
                                     </div>
@@ -208,15 +208,15 @@ export default function Companies() {
 
             {/* Pagination */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p style={{ fontSize: '13px', color: '#64748b' }}>Showing {Math.min((page - 1) * PAGE_SIZE + 1, filtered.length)}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} companies</p>
+                <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Showing {Math.min((page - 1) * PAGE_SIZE + 1, filtered.length)}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} companies</p>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: '600' }}>
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.4 : 1, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: '600' }}>
                         <ChevronLeft size={15} /> Prev
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                        <button key={n} onClick={() => setPage(n)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', background: page === n ? '#6366f1' : 'white', color: page === n ? 'white' : '#0f172a', cursor: 'pointer', fontWeight: '700', fontSize: '13px' }}>{n}</button>
+                        <button key={n} onClick={() => setPage(n)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--card-border)', background: page === n ? '#6366f1' : 'var(--card-bg)', color: page === n ? 'white' : 'var(--text-primary)', cursor: 'pointer', fontWeight: '700', fontSize: '13px' }}>{n}</button>
                     ))}
-                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: '600' }}>
+                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.4 : 1, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: '600' }}>
                         Next <ChevronRight size={15} />
                     </button>
                 </div>
@@ -228,13 +228,13 @@ export default function Companies() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', zIndex: 1000, display: 'grid', placeItems: 'center', padding: '20px' }}>
                         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                            style={{ background: 'white', width: '100%', maxWidth: '560px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
+                            style={{ background: 'var(--card-bg)', width: '100%', maxWidth: '560px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
                                 <div>
-                                    <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>Create New Company</h2>
-                                    <p style={{ color: '#64748b', fontSize: '14px' }}>Provision a new tenant on the platform.</p>
+                                    <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>Create New Company</h2>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Provision a new tenant on the platform.</p>
                                 </div>
-                                <button onClick={() => setShowCreate(false)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}><X size={18} /></button>
+                                <button onClick={() => setShowCreate(false)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', color: 'var(--text-primary)' }}><X size={18} /></button>
                             </div>
                             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -287,7 +287,7 @@ export default function Companies() {
                                     {formErrors.password && <p style={{ color: '#ef4444', fontSize: '11px', marginTop: '4px' }}>{formErrors.password}</p>}
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                                    <button type="button" onClick={() => setShowCreate(false)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
+                                    <button type="button" onClick={() => setShowCreate(false)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
                                     <button type="submit" style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: '#6366f1', color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Create Company</button>
                                 </div>
                             </form>
@@ -302,10 +302,10 @@ export default function Companies() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', zIndex: 1000, display: 'grid', placeItems: 'center', padding: '20px' }}>
                         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                            style={{ background: 'white', width: '100%', maxWidth: '480px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}>
+                            style={{ background: 'var(--card-bg)', width: '100%', maxWidth: '480px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-                                <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a' }}>Edit Company</h2>
-                                <button onClick={() => setEditCompany(null)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}><X size={18} /></button>
+                                <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>Edit Company</h2>
+                                <button onClick={() => setEditCompany(null)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', color: 'var(--text-primary)' }}><X size={18} /></button>
                             </div>
                             <form onSubmit={handleEdit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                                 <div>
@@ -318,7 +318,7 @@ export default function Companies() {
                                         <select value={editCompany.plan} onChange={e => setEditCompany({ ...editCompany, plan: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
                                             {PLANS.map(p => <option key={p}>{p}</option>)}
                                         </select>
-                                        <div style={{ marginTop: '8px', padding: '10px', background: '#f8fafc', borderRadius: '8px', fontSize: '12px', color: '#64748b' }}>
+                                        <div style={{ marginTop: '8px', padding: '10px', background: 'var(--bg-darker)', borderRadius: '8px', fontSize: '12px', color: 'var(--text-secondary)' }}>
                                             {editCompany.plan === 'Basic' && '1 location · $299/mo · 5GB storage'}
                                             {editCompany.plan === 'Pro' && '3 locations · $999/mo · 10GB storage'}
                                             {editCompany.plan === 'Enterprise' && 'Unlimited · $2,450/mo · 50GB storage'}
@@ -337,7 +337,7 @@ export default function Companies() {
                                     </select>
                                 </div>
                                 <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                                    <button type="button" onClick={() => setEditCompany(null)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
+                                    <button type="button" onClick={() => setEditCompany(null)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
                                     <button type="submit" style={{ flex: 2, padding: '13px', borderRadius: '12px', border: 'none', background: '#6366f1', color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Save Changes</button>
                                 </div>
                             </form>
@@ -352,11 +352,11 @@ export default function Companies() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', zIndex: 1000, display: 'grid', placeItems: 'center', padding: '20px' }}>
                         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                            style={{ background: 'white', width: '100%', maxWidth: '420px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', textAlign: 'center' }}>
+                            style={{ background: 'var(--card-bg)', width: '100%', maxWidth: '420px', borderRadius: '20px', padding: '40px', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', textAlign: 'center' }}>
                             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: confirmAction.action === 'Suspended' ? '#fef2f2' : '#f0fdf4', display: 'grid', placeItems: 'center', margin: '0 auto 20px' }}>
                                 <AlertTriangle size={26} color={confirmAction.action === 'Suspended' ? '#ef4444' : '#16a34a'} />
                             </div>
-                            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '10px' }}>
+                            <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '10px' }}>
                                 {confirmAction.action === 'Suspended' ? 'Suspend Company?' : 'Activate Company?'}
                             </h3>
                             <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '28px', lineHeight: 1.6 }}>
@@ -365,7 +365,7 @@ export default function Companies() {
                                     : `This will restore full access for "${confirmAction.company.name}".`}
                             </p>
                             <div style={{ display: 'flex', gap: '12px' }}>
-                                <button onClick={() => setConfirmAction(null)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
+                                <button onClick={() => setConfirmAction(null)} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
                                 <button onClick={handleStatusToggle} style={{ flex: 1, padding: '13px', borderRadius: '12px', border: 'none', background: confirmAction.action === 'Suspended' ? '#ef4444' : '#10b981', color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>
                                     {confirmAction.action === 'Suspended' ? 'Yes, Suspend' : 'Yes, Activate'}
                                 </button>
@@ -382,9 +382,9 @@ export default function Companies() {
                         style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }}
                         onClick={e => { if (e.target === e.currentTarget) setViewCompany(null); }}>
                         <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-                            style={{ width: '480px', height: '100%', background: 'white', overflowY: 'auto', boxShadow: '-20px 0 60px rgba(0,0,0,0.15)' }}>
+                            style={{ width: '480px', height: '100%', background: 'var(--card-bg)', overflowY: 'auto', boxShadow: '-20px 0 60px rgba(0,0,0,0.15)' }}>
                             {/* Drawer Header */}
-                            <div style={{ padding: '28px 32px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
+                            <div style={{ padding: '28px 32px', borderBottom: '1px solid var(--card-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--card-bg)', zIndex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: '#eef2ff', display: 'grid', placeItems: 'center' }}>
                                         <Building2 size={22} color="#6366f1" />
@@ -394,7 +394,7 @@ export default function Companies() {
                                         <span style={{ fontSize: '12px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', background: viewCompany.status === 'Active' ? '#f0fdf4' : '#fef2f2', color: viewCompany.status === 'Active' ? '#16a34a' : '#dc2626' }}>{viewCompany.status}</span>
                                     </div>
                                 </div>
-                                <button onClick={() => setViewCompany(null)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}><X size={18} /></button>
+                                <button onClick={() => setViewCompany(null)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', cursor: 'pointer', color: 'var(--text-primary)' }}><X size={18} /></button>
                             </div>
 
                             <div style={{ padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -418,7 +418,7 @@ export default function Companies() {
                                 </section>
 
                                 {/* Subscription */}
-                                <section style={{ padding: '20px', background: '#f8fafc', borderRadius: '14px' }}>
+                                <section style={{ padding: '20px', background: 'var(--bg-darker)', borderRadius: '14px' }}>
                                     <p style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.08em', marginBottom: '14px' }}>SUBSCRIPTION</p>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                         <span style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a' }}>{viewCompany.plan} Plan</span>
@@ -435,15 +435,15 @@ export default function Companies() {
                                 <section>
                                     <p style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.08em', marginBottom: '14px' }}>USAGE STATS</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                                        <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', textAlign: 'center' }}>
+                                        <div style={{ padding: '16px', background: 'var(--bg-darker)', borderRadius: '12px', textAlign: 'center' }}>
                                             <Users size={20} color="#6366f1" style={{ margin: '0 auto 8px' }} />
-                                            <p style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a' }}>{viewCompany.users}</p>
-                                            <p style={{ fontSize: '12px', color: '#64748b' }}>Active Users</p>
+                                            <p style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{viewCompany.users}</p>
+                                            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Active Users</p>
                                         </div>
-                                        <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', textAlign: 'center' }}>
+                                        <div style={{ padding: '16px', background: 'var(--bg-darker)', borderRadius: '12px', textAlign: 'center' }}>
                                             <HardDrive size={20} color="#f59e0b" style={{ margin: '0 auto 8px' }} />
-                                            <p style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a' }}>{viewCompany.storageUsed}GB</p>
-                                            <p style={{ fontSize: '12px', color: '#64748b' }}>Storage Used</p>
+                                            <p style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{viewCompany.storageUsed}GB</p>
+                                            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Storage Used</p>
                                         </div>
                                     </div>
                                     <StorageBar used={viewCompany.storageUsed} limit={viewCompany.storageLimit} />
@@ -454,9 +454,9 @@ export default function Companies() {
                                     <p style={{ fontSize: '11px', fontWeight: '800', color: '#94a3b8', letterSpacing: '0.08em', marginBottom: '14px' }}>RECENT ACTIVITY</p>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                         {viewCompany.recentActivity.map((a, i) => (
-                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: '#f8fafc', borderRadius: '10px' }}>
+                                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: 'var(--bg-darker)', borderRadius: '10px' }}>
                                                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1', flexShrink: 0 }} />
-                                                <span style={{ fontSize: '13px', color: '#334155' }}>{a}</span>
+                                                <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{a}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -465,7 +465,7 @@ export default function Companies() {
                                 {/* Actions */}
                                 <div style={{ display: 'flex', gap: '10px' }}>
                                     <button onClick={() => { setEditCompany({ ...viewCompany }); setViewCompany(null); }}
-                                        style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', background: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                                        style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)', fontWeight: '700', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                                         <Edit2 size={15} /> Edit
                                     </button>
                                     <button onClick={() => { setConfirmAction({ company: viewCompany, action: viewCompany.status === 'Active' ? 'Suspended' : 'Active' }); setViewCompany(null); }}
