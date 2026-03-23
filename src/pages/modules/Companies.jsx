@@ -155,7 +155,7 @@ export default function Companies() {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                         <tr style={{ background: 'var(--bg-darker)', borderBottom: '1px solid var(--card-border)' }}>
-                            {['Company Name', 'Owner', 'Email', 'Plan', 'Status', 'Storage', 'Created', 'Actions'].map(h => (
+                            {['Company Name', 'Owner', 'Email', 'Plan', 'Status', 'Created', 'Actions'].map(h => (
                                 <th key={h} style={{ padding: '14px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h.toUpperCase()}</th>
                             ))}
                         </tr>
@@ -185,9 +185,6 @@ export default function Companies() {
                                     <span style={{ fontSize: '12px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px', background: c.status === 'Active' ? '#f0fdf4' : '#fef2f2', color: c.status === 'Active' ? '#16a34a' : '#dc2626' }}>
                                         {c.status}
                                     </span>
-                                </td>
-                                <td style={{ padding: '16px', minWidth: '140px' }}>
-                                    <StorageBar used={c.storageUsed} limit={c.storageLimit} />
                                 </td>
                                 <td style={{ padding: '16px', fontSize: '13px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{c.created}</td>
                                 <td style={{ padding: '16px' }}>
@@ -268,12 +265,7 @@ export default function Companies() {
                                             {PLANS.map(p => <option key={p}>{p}</option>)}
                                         </select>
                                     </div>
-                                    <div>
-                                        <label style={labelStyle}>STORAGE LIMIT</label>
-                                        <select value={form.storageLimit} onChange={e => setForm({ ...form, storageLimit: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
-                                            {STORAGE_OPTIONS.map(s => <option key={s}>{s}</option>)}
-                                        </select>
-                                    </div>
+
                                 </div>
                                 <div>
                                     <label style={labelStyle}>PASSWORD</label>
@@ -324,10 +316,7 @@ export default function Companies() {
                                             {editCompany.plan === 'Enterprise' && 'Unlimited · $2,450/mo · 50GB storage'}
                                         </div>
                                     </div>
-                                    <div>
-                                        <label style={labelStyle}>STORAGE LIMIT (GB)</label>
-                                        <input type="number" min="1" value={editCompany.storageLimit} onChange={e => setEditCompany({ ...editCompany, storageLimit: parseInt(e.target.value) || 1 })} style={inputStyle} />
-                                    </div>
+
                                 </div>
                                 <div>
                                     <label style={labelStyle}>STATUS</label>

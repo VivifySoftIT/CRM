@@ -27,7 +27,6 @@ const SuperAdmin = lazy(() => import('./pages/modules/SuperAdmin'))
 const Companies = lazy(() => import('./pages/modules/Companies'))
 const Settings = lazy(() => import('./pages/modules/Settings'))
 const SuperAnalytics = lazy(() => import('./pages/modules/Analytics'))
-const SystemHealth = lazy(() => import('./pages/modules/SystemHealth'))
 const SubscriptionPlans = lazy(() => import('./pages/modules/SubscriptionPlans'))
 
 function App() {
@@ -68,7 +67,6 @@ function App() {
             <Route path="dashboard" element={<SuperAdmin />} />
             <Route path="companies" element={<Companies />} />
             <Route path="plans" element={<SubscriptionPlans />} />
-            <Route path="status" element={<SystemHealth />} />
             <Route path="analytics" element={<SuperAnalytics />} />
             <Route path="settings" element={<Settings />} />
           </Route>

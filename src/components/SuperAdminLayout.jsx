@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Building2, Shield, Settings, LogOut, Bell, Activity, Package, BarChart2, Sun, Moon, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, Building2, Shield, Settings, LogOut, Bell, Package, BarChart2, Sun, Moon, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 
@@ -31,8 +31,7 @@ const SuperAdminLayout = () => {
     { icon: <Building2 size={20} />,      label: 'Company Management', path: '/super-admin/companies' },
     { icon: <Package size={20} />,        label: 'Subscription Plans', path: '/super-admin/plans'     },
     { icon: <BarChart2 size={20} />,      label: 'Analytics',          path: '/super-admin/analytics' },
-    { icon: <Activity size={20} />,       label: 'System Health',      path: '/super-admin/status'    },
-    { icon: <Settings size={20} />,       label: 'Global Settings',    path: '/super-admin/settings'  },
+    // { icon: <Settings size={20} />,       label: 'Global Settings',    path: '/super-admin/settings'  },
   ];
 
   const handleLogout = () => { localStorage.removeItem('userType'); navigate('/'); };

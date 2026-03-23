@@ -1,580 +1,500 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Line, Bar, Doughnut, Pie
-} from 'react-chartjs-2';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
   LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler
 } from 'chart.js';
 import {
-  TrendingUp, TrendingDown, Users, Bed, CreditCard, Activity,
-  Download, FileText, Filter, RefreshCw, Star, MapPin,
-  ChevronUp, ChevronDown, ArrowUpRight
+  TrendingUp, TrendingDown, Wallet, BedDouble, AlertTriangle,
+  CreditCard, Download, RefreshCw, SlidersHorizontal,
+  Trophy, AlertOctagon, MapPin, Sparkles, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 
-ChartJS.register(
-  CategoryScale, LinearScale, PointElement, LineElement,
-  BarElement, ArcElement, Title, Tooltip, Legend, Filler
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
-// ─── Dummy Data ───────────────────────────────────────────────────────────────
+// ── Count-up hook ─────────────────────────────────────────────────────────────
+function useCountUp(end, duration = 1400) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const step = end / (duration / 16);
+    const t = setInterval(() => {
+      start += step;
+      if (start >= end) { setVal(end); clearInterval(t); }
+      else setVal(Math.floor(start));
+    }, 16);
+    return () => clearInterval(t);
+  }, [end, duration]);
+  return val;
+}
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// ── Data ──────────────────────────────────────────────────────────────────────
+const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const QUARTERS = ['Q1','Q2','Q3','Q4'];
+const CITIES   = ['All Cities','Mumbai','Delhi','Bangalore','Chennai','Hyderabad','Goa'];
+const CATS     = ['All Categories','Luxury','Budget','Boutique','Resort'];
 
-const revenueData = {
-  current:  [42,58,51,67,74,89,95,102,88,110,125,138],
-  previous: [35,44,40,55,60,72,80,88,75,92,105,118],
-};
+const revMonthly   = { cur:[42,58,51,67,74,89,95,102,88,110,125,142], prev:[35,44,40,55,60,72,80,88,75,92,105,118] };
+const revQuarterly = { cur:[151,230,285,377], prev:[119,187,243,315] };
+const hotelRev     = { labels:['Grand Omni','Riviera','Urban Boutique','Sky Palace','Meridian'], cur:[2450,1820,980,1650,2100], prev:[2100,1600,850,1400,1900] };
+const cityData     = { labels:['Chennai','Bangalore','Mumbai','Delhi','Hyderabad','Goa'], values:[40,35,30,28,22,18] };
+const distData     = { labels:['Room Booking','Events','Spa & Dining'], values:[62,24,14], colors:['#818cf8','#34d399','#fbbf24'] };
 
-const hotelRevenue = {
-  labels: ['Grand Omni','Riviera Resort','Urban Boutique','Sky Palace','The Meridian'],
-  current:  [2450,1820,980,1650,2100],
-  previous: [2100,1600,850,1400,1900],
-};
-
-const occupancyData = [88, 74, 62, 91, 79];
-const occupancyLabels = ['Grand Omni','Riviera','Urban','Sky Palace','Meridian'];
-const occupancyColors = ['#6366f1','#10b981','#f59e0b','#ec4899','#8b5cf6'];
-
-const guestTrend = {
-  labels: MONTHS,
-  newGuests:       [320,410,380,490,520,610,580,670,640,720,800,880],
-  returningGuests: [180,220,200,260,290,340,310,380,360,410,450,490],
-};
-
-const cityRevenue = {
-  labels: ['Mumbai','Delhi','Bangalore','Chennai','Hyderabad','Pune','Goa'],
-  values: [4200,3800,2900,2400,2100,1800,3500],
-};
-
-const bookingTrend = {
-  labels: MONTHS,
-  bookings:      [210,280,260,320,350,410,390,450,420,480,530,590],
-  cancellations: [18,22,20,25,28,32,30,35,33,38,42,46],
-};
-
-const topHotels = [
-  { name:'Grand Omni Hotel',    city:'Mumbai',    revenue:'₹24.5L', occupancy:88, rating:4.8, bookings:412, trend:'up' },
-  { name:'Sky Palace Resort',   city:'Goa',       revenue:'₹21.0L', occupancy:91, rating:4.9, bookings:389, trend:'up' },
-  { name:'The Meridian',        city:'Delhi',     revenue:'₹19.8L', occupancy:79, rating:4.6, bookings:356, trend:'up' },
-  { name:'Riviera Resort & Spa',city:'Chennai',   revenue:'₹18.2L', occupancy:74, rating:4.7, bookings:298, trend:'down' },
-  { name:'Urban Boutique Stay', city:'Bangalore', revenue:'₹9.8L',  occupancy:62, rating:4.3, bookings:201, trend:'down' },
+const HOTELS = [
+  { rank:1, name:'Taj Hotel',       city:'Chennai',   rev:'₹12L', growth:18,  occ:88, cancel:12, fail:'Gateway Timeout',      failC:'#f97316', status:'top' },
+  { rank:2, name:'ITC Grand',       city:'Mumbai',    rev:'₹10L', growth:12,  occ:82, cancel:8,  fail:'Card Declined',         failC:'#ef4444', status:'top' },
+  { rank:3, name:'OYO Elite',       city:'Bangalore', rev:'₹8L',  growth:9,   occ:76, cancel:18, fail:'Insufficient Balance',  failC:'#f59e0b', status:'avg' },
+  { rank:4, name:'Marriott Suites', city:'Delhi',     rev:'₹7.5L',growth:6,   occ:79, cancel:6,  fail:'Gateway Timeout',       failC:'#f97316', status:'avg' },
+  { rank:5, name:'The Leela',       city:'Goa',       rev:'₹6.8L',growth:4,   occ:71, cancel:14, fail:'Card Declined',         failC:'#ef4444', status:'avg' },
+  { rank:6, name:'Radisson Blu',    city:'Pune',      rev:'—',    growth:null, occ:39, cancel:22, fail:'Insufficient Balance',  failC:'#f59e0b', status:'risk' },
+  { rank:7, name:'ITC Sonar',       city:'Kolkata',   rev:'—',    growth:null, occ:44, cancel:18, fail:'Card Declined',         failC:'#ef4444', status:'risk' },
+  { rank:8, name:'Urban Boutique',  city:'Hyderabad', rev:'—',    growth:null, occ:47, cancel:15, fail:'Gateway Timeout',       failC:'#f97316', status:'risk' },
 ];
 
-// ─── Chart defaults ───────────────────────────────────────────────────────────
-
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: '#0f172a',
-      titleColor: '#94a3b8',
-      bodyColor: '#fff',
-      padding: 12,
-      cornerRadius: 10,
-      displayColors: true,
-    }
-  }
+const STATUS_META = {
+  top:  { label:'Top Performer',   bg:'rgba(52,211,153,0.12)',  color:'#10b981', dot:'#10b981' },
+  avg:  { label:'Average',         bg:'rgba(251,191,36,0.12)',  color:'#d97706', dot:'#f59e0b' },
+  risk: { label:'Needs Attention', bg:'rgba(239,68,68,0.12)',   color:'#dc2626', dot:'#ef4444' },
 };
 
-// ─── Reusable UI ──────────────────────────────────────────────────────────────
-
-const Card = ({ children, style = {} }) => (
+// ── Primitives ────────────────────────────────────────────────────────────────
+const GlassCard = ({ children, style = {}, glow }) => (
   <div style={{
-    background: 'var(--card-bg)', borderRadius: '16px',
+    background: 'var(--card-bg)',
     border: '1px solid var(--card-border)',
-    boxShadow: 'var(--card-shadow)',
-    padding: '24px', ...style
-  }}>{children}</div>
-);
-
-const Skeleton = ({ h = 20, w = '100%', r = 8 }) => (
-  <div style={{
-    height: h, width: w, borderRadius: r,
-    background: 'linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%)',
-    backgroundSize: '200% 100%',
-    animation: 'shimmer 1.4s infinite'
-  }} />
-);
-
-const KpiCard = ({ icon, label, value, sub, growth, color, loading }) => (
-  <Card style={{ position: 'relative', overflow: 'hidden' }}>
-    {loading ? (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <Skeleton h={16} w="60%" /><Skeleton h={32} w="80%" /><Skeleton h={14} w="50%" />
-      </div>
-    ) : (
-      <>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: `${color}15`, display: 'grid', placeItems: 'center', color }}>{icon}</div>
-          <span style={{
-            fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 20,
-            background: growth >= 0 ? '#dcfce7' : '#fee2e2',
-            color: growth >= 0 ? '#16a34a' : '#dc2626',
-            display: 'flex', alignItems: 'center', gap: 4
-          }}>
-            {growth >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            {Math.abs(growth)}%
-          </span>
-        </div>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6 }}>{label}</p>
-        <h3 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-1px', marginBottom: 4 }}>{value}</h3>
-        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{sub}</p>
-        <div style={{ position: 'absolute', bottom: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: `${color}08` }} />
-      </>
-    )}
-  </Card>
-);
-
-const SectionTitle = ({ title, sub, action }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-    <div>
-      <h4 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2 }}>{title}</h4>
-      {sub && <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{sub}</p>}
-    </div>
-    {action}
+    borderRadius: '20px',
+    padding: '24px',
+    boxShadow: glow
+      ? `var(--card-shadow), 0 0 0 1px ${glow}22, 0 8px 32px ${glow}18`
+      : 'var(--card-shadow)',
+    position: 'relative',
+    overflow: 'hidden',
+    ...style,
+  }}>
+    {children}
   </div>
 );
 
-const PeriodBtn = ({ label, active, onClick }) => (
-  <button onClick={onClick} style={{
-    padding: '5px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600,
-    background: active ? '#6366f1' : '#f1f5f9', color: active ? 'white' : '#64748b', transition: 'all 0.15s'
-  }}>{label}</button>
+const Tag = ({ children, bg, color }) => (
+  <span style={{ fontSize:'10px', fontWeight:'800', padding:'3px 9px', borderRadius:'20px', background:bg, color, letterSpacing:'0.04em', display:'inline-flex', alignItems:'center', gap:'4px' }}>
+    {children}
+  </span>
 );
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-const Analytics = () => {
-  const [loading, setLoading] = useState(true);
-  const [revPeriod, setRevPeriod] = useState('monthly');
-  const [guestPeriod, setGuestPeriod] = useState('monthly');
-  const [sortCol, setSortCol] = useState('revenue');
-  const [sortDir, setSortDir] = useState('desc');
-  const [filters, setFilters] = useState({ from: '2025-01-01', to: '2025-12-31', city: 'all', category: 'all' });
-  const [toast, setToast] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1600);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleExport = (type) => {
-    setToast(true);
-    setTimeout(() => setToast(false), 2500);
-  };
-
-  const handleSort = (col) => {
-    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortCol(col); setSortDir('desc'); }
-  };
-
-  const SortIcon = ({ col }) => sortCol === col
-    ? (sortDir === 'asc' ? <ChevronUp size={13} /> : <ChevronDown size={13} />)
-    : <ChevronDown size={13} style={{ opacity: 0.3 }} />;
-
-  // ── Chart configs ──────────────────────────────────────────────────────────
-
-  const revenueLineConfig = {
-    labels: MONTHS,
-    datasets: [
-      {
-        label: 'Current Year',
-        data: revenueData.current,
-        borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)',
-        tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#6366f1', borderWidth: 2
-      },
-      {
-        label: 'Previous Year',
-        data: revenueData.previous,
-        borderColor: '#e2e8f0', backgroundColor: 'transparent',
-        tension: 0.4, fill: false, pointRadius: 3, borderDash: [5,4], borderWidth: 2,
-        pointBackgroundColor: '#94a3b8'
-      }
-    ]
-  };
-
-  const hotelBarConfig = {
-    labels: hotelRevenue.labels,
-    datasets: [
-      { label: 'Current', data: hotelRevenue.current, backgroundColor: '#6366f1', borderRadius: 8, barThickness: 18 },
-      { label: 'Previous', data: hotelRevenue.previous, backgroundColor: '#e0e7ff', borderRadius: 8, barThickness: 18 }
-    ]
-  };
-
-  const occupancyDonutConfig = {
-    labels: occupancyLabels,
-    datasets: [{ data: occupancyData, backgroundColor: occupancyColors, borderWidth: 0, hoverOffset: 6 }]
-  };
-
-  const guestLineConfig = {
-    labels: MONTHS,
-    datasets: [
-      { label: 'New Guests', data: guestTrend.newGuests, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.08)', tension: 0.4, fill: true, borderWidth: 2, pointRadius: 3 },
-      { label: 'Returning', data: guestTrend.returningGuests, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.06)', tension: 0.4, fill: true, borderWidth: 2, pointRadius: 3 }
-    ]
-  };
-
-  const guestPieConfig = {
-    labels: ['New Guests', 'Returning Guests'],
-    datasets: [{ data: [62, 38], backgroundColor: ['#6366f1','#10b981'], borderWidth: 0, hoverOffset: 6 }]
-  };
-
-  const cityBarConfig = {
-    labels: cityRevenue.labels,
-    datasets: [{ label: 'Revenue (₹L)', data: cityRevenue.values, backgroundColor: cityRevenue.values.map((_, i) => i === 0 ? '#6366f1' : '#e0e7ff'), borderRadius: 8, barThickness: 22 }]
-  };
-
-  const bookingBarConfig = {
-    labels: MONTHS,
-    datasets: [
-      { label: 'Bookings', data: bookingTrend.bookings, backgroundColor: '#6366f1', borderRadius: 6, barThickness: 14 },
-      { label: 'Cancellations', data: bookingTrend.cancellations, backgroundColor: '#fca5a5', borderRadius: 6, barThickness: 14 }
-    ]
-  };
-
-  const chartOpts = (extra = {}) => ({
-    ...chartDefaults,
-    plugins: { ...chartDefaults.plugins, legend: { display: false }, ...extra.plugins },
-    scales: {
-      x: { grid: { display: false }, ticks: { color: 'var(--text-muted)', font: { size: 11 } } },
-      y: { grid: { color: 'var(--card-border)' }, ticks: { color: 'var(--text-muted)', font: { size: 11 } } },
-      ...extra.scales
-    },
-    ...extra
-  });
-
-  const donutOpts = {
-    ...chartDefaults,
-    cutout: '72%',
-    plugins: { ...chartDefaults.plugins, legend: { display: true, position: 'bottom', labels: { color: '#64748b', font: { size: 11 }, padding: 12, boxWidth: 10, borderRadius: 4 } } }
-  };
-
-  const pieOpts = {
-    ...chartDefaults,
-    plugins: { ...chartDefaults.plugins, legend: { display: true, position: 'bottom', labels: { color: '#64748b', font: { size: 11 }, padding: 12, boxWidth: 10 } } }
-  };
-
-  // ── Render ─────────────────────────────────────────────────────────────────
+const OccBar = ({ pct }) => {
+  const c = pct >= 75 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ minHeight: '100%' }}>
-      <style>{`
-        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-        .th-sort { cursor:pointer; user-select:none; }
-        .th-sort:hover { color:#6366f1; }
-      `}</style>
+    <div>
+      <span style={{ fontSize:'12px', fontWeight:'800', color:c }}>{pct}%</span>
+      <div style={{ height:'5px', background:'var(--card-border)', borderRadius:'99px', overflow:'hidden', marginTop:'5px', width:'80px' }}>
+        <motion.div initial={{ width:0 }} animate={{ width:`${pct}%` }} transition={{ duration:0.8, ease:'easeOut' }}
+          style={{ height:'100%', background:`linear-gradient(90deg,${c}99,${c})`, borderRadius:'99px' }} />
+      </div>
+    </div>
+  );
+};
 
-      {/* ── Page Header ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', marginBottom: 4 }}>Analytics Dashboard</h1>
-          <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>Platform-wide performance across all hotel tenants.</p>
+// ── Circular progress ─────────────────────────────────────────────────────────
+const Ring = ({ pct, color, size = 56, stroke = 5 }) => {
+  const r = (size - stroke * 2) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  return (
+    <svg width={size} height={size} style={{ transform:'rotate(-90deg)', flexShrink:0 }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--card-border)" strokeWidth={stroke} />
+      <motion.circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+        strokeLinecap="round" strokeDasharray={circ}
+        initial={{ strokeDashoffset: circ }} animate={{ strokeDashoffset: circ - dash }}
+        transition={{ duration:1.2, ease:'easeOut' }} />
+    </svg>
+  );
+};
+
+// ── Metric Card ───────────────────────────────────────────────────────────────
+function MetricCard({ delay, gradient, icon, iconColor, value, label, sub, trend, invertTrend, ring, ringColor, extra }) {
+  const good = invertTrend ? trend < 0 : trend > 0;
+  return (
+    <motion.div initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ delay, duration:0.45, ease:'easeOut' }}
+      whileHover={{ y:-4, boxShadow:`0 24px 56px ${iconColor}22` }}
+      style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:'20px', padding:'22px',
+        boxShadow:'var(--card-shadow)', display:'flex', flexDirection:'column', gap:'14px', position:'relative', overflow:'hidden', cursor:'default' }}>
+      {/* gradient accent top-right */}
+      <div style={{ position:'absolute', top:0, right:0, width:'120px', height:'120px', borderRadius:'0 20px 0 120px',
+        background:`linear-gradient(135deg,${iconColor}18,${iconColor}06)`, pointerEvents:'none' }} />
+
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+        <div style={{ width:'44px', height:'44px', borderRadius:'14px', background:gradient, display:'grid', placeItems:'center', boxShadow:`0 4px 14px ${iconColor}30` }}>
+          {React.cloneElement(icon, { size:20, color:'white' })}
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => handleExport('excel')} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 10, border: '1px solid var(--card-border)', background: 'var(--card-bg)', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer' }}>
-            <Download size={15} /> Export Excel
-          </button>
-          <button onClick={() => handleExport('pdf')} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', fontSize: 13, fontWeight: 700, color: 'white', cursor: 'pointer', boxShadow: '0 4px 14px rgba(99,102,241,0.3)' }}>
-            <FileText size={15} /> Download Report
-          </button>
+        <span style={{ display:'inline-flex', alignItems:'center', gap:'4px', fontSize:'11px', fontWeight:'800',
+          color: good?'#10b981':'#ef4444', background: good?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)',
+          padding:'4px 9px', borderRadius:'20px' }}>
+          {good ? <ArrowUpRight size={11}/> : <ArrowDownRight size={11}/>}{Math.abs(trend)}%
+        </span>
+      </div>
+
+      <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+        {ring !== undefined && <Ring pct={ring} color={iconColor} />}
+        <div>
+          <p style={{ fontSize:'28px', fontWeight:'900', color:'var(--text-primary)', letterSpacing:'-1.5px', lineHeight:1 }}>{value}</p>
+          <p style={{ fontSize:'13px', fontWeight:'700', color:'var(--text-secondary)', marginTop:'4px' }}>{label}</p>
+          <p style={{ fontSize:'11px', color:'var(--text-muted)', marginTop:'2px' }}>{sub}</p>
         </div>
       </div>
+      {extra}
+    </motion.div>
+  );
+}
+
+// ── Chart defaults ────────────────────────────────────────────────────────────
+const chartBase = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: {
+    legend: { display:true, position:'top', labels:{ font:{ size:11, weight:'600' }, color:'#94a3b8', boxWidth:10, padding:16, usePointStyle:true } },
+    tooltip: { mode:'index', intersect:false, backgroundColor:'rgba(15,23,42,0.92)', titleColor:'#f1f5f9', bodyColor:'#94a3b8', padding:12, cornerRadius:10, borderColor:'rgba(255,255,255,0.08)', borderWidth:1 }
+  },
+  scales: {
+    x: { grid:{ display:false }, ticks:{ color:'#64748b', font:{ size:11 } }, border:{ display:false } },
+    y: { grid:{ color:'rgba(148,163,184,0.06)' }, ticks:{ color:'#64748b', font:{ size:11 }, callback: v => '₹'+v+'L' }, border:{ display:false } }
+  }
+};
+
+// ── Main Component ────────────────────────────────────────────────────────────
+const Analytics = () => {
+  const [revMode, setRevMode] = useState('monthly');
+  const [fromDate, setFrom]   = useState('2025-01-01');
+  const [toDate, setTo]       = useState('2025-12-31');
+  const [city, setCity]       = useState('All Cities');
+  const [cat, setCat]         = useState('All Categories');
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+
+  const apply = () => { setLoading(true); setTimeout(() => setLoading(false), 800); };
+  const reset = () => { setFrom('2025-01-01'); setTo('2025-12-31'); setCity('All Cities'); setCat('All Categories'); };
+
+  const revLabels = revMode === 'monthly' ? MONTHS : QUARTERS;
+  const revCur    = revMode === 'monthly' ? revMonthly.cur : revQuarterly.cur;
+  const revPrev   = revMode === 'monthly' ? revMonthly.prev : revQuarterly.prev;
+
+  const lineData = {
+    labels: revLabels,
+    datasets: [
+      { label:'2025', data:revCur,  borderColor:'#818cf8', backgroundColor:'rgba(129,140,248,0.1)', borderWidth:2.5, fill:true, tension:0.45, pointRadius:0, pointHoverRadius:5, pointBackgroundColor:'#818cf8' },
+      { label:'2024', data:revPrev, borderColor:'#475569', backgroundColor:'transparent', borderWidth:1.5, fill:false, tension:0.45, pointRadius:0, pointHoverRadius:4, borderDash:[5,5] },
+    ]
+  };
+
+  const barData = {
+    labels: hotelRev.labels,
+    datasets: [
+      { label:'2025', data:hotelRev.cur,  backgroundColor:'rgba(129,140,248,0.85)', borderRadius:8, borderSkipped:false },
+      { label:'2024', data:hotelRev.prev, backgroundColor:'rgba(71,85,105,0.4)',    borderRadius:8, borderSkipped:false },
+    ]
+  };
+
+  const cityBarData = {
+    labels: cityData.labels,
+    datasets: [{ label:'Revenue (₹L)', data:cityData.values,
+      backgroundColor:['rgba(129,140,248,0.85)','rgba(52,211,153,0.85)','rgba(251,191,36,0.85)','rgba(236,72,153,0.85)','rgba(139,92,246,0.85)','rgba(6,182,212,0.85)'],
+      borderRadius:8, borderSkipped:false }]
+  };
+
+  const donutData = {
+    labels: distData.labels,
+    datasets: [{ data:distData.values, backgroundColor:distData.colors, borderWidth:0, hoverOffset:8 }]
+  };
+  const donutOpts = {
+    responsive:true, maintainAspectRatio:false, cutout:'72%',
+    plugins: {
+      legend:{ display:true, position:'bottom', labels:{ font:{ size:12, weight:'600' }, color:'#94a3b8', padding:18, boxWidth:10, usePointStyle:true } },
+      tooltip:{ callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }, backgroundColor:'rgba(15,23,42,0.92)', titleColor:'#f1f5f9', bodyColor:'#94a3b8', padding:12, cornerRadius:10 }
+    }
+  };
+
+  const iStyle = { padding:'9px 14px', borderRadius:'10px', border:'1px solid var(--card-border)', background:'var(--card-bg)', color:'var(--text-primary)', fontSize:'13px', outline:'none', transition:'border-color 0.2s' };
+
+  const filteredHotels = activeTab === 'all' ? HOTELS : HOTELS.filter(h => h.status === activeTab);
+
+  return (
+    <div style={{ minHeight:'100%' }}>
+
+      {/* ── Header ── */}
+      <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
+        style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'24px', flexWrap:'wrap', gap:'12px' }}>
+        <div>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'6px' }}>
+            <div style={{ width:'36px', height:'36px', borderRadius:'12px', background:'linear-gradient(135deg,#6366f1,#8b5cf6)', display:'grid', placeItems:'center', boxShadow:'0 4px 14px rgba(99,102,241,0.4)' }}>
+              <Sparkles size={18} color="white"/>
+            </div>
+            <h1 style={{ fontSize:'24px', fontWeight:'900', color:'var(--text-primary)', letterSpacing:'-0.8px' }}>Analytics Dashboard</h1>
+          </div>
+          <p style={{ fontSize:'13px', color:'var(--text-secondary)', paddingLeft:'46px' }}>Platform-wide performance across all hotel tenants</p>
+        </div>
+        <button style={{ display:'flex', alignItems:'center', gap:'8px', padding:'10px 20px', borderRadius:'12px',
+          border:'1px solid var(--card-border)', background:'var(--card-bg)', color:'var(--text-primary)',
+          fontSize:'13px', fontWeight:'700', cursor:'pointer', boxShadow:'var(--card-shadow)' }}>
+          <Download size={14}/> Export Excel
+        </button>
+      </motion.div>
 
       {/* ── Filters ── */}
-      <Card style={{ marginBottom: 24, padding: '16px 20px' }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>From</p>
-            <input type="date" value={filters.from} onChange={e => setFilters(f => ({...f, from: e.target.value}))}
-              style={{ padding: '9px 12px', borderRadius: 10, border: '1px solid var(--input-border)', fontSize: 13, color: 'var(--text-primary)', outline: 'none', background: 'var(--input-bg)' }} />
+      <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.05 }}
+        style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:'16px',
+          padding:'14px 20px', marginBottom:'24px', display:'flex', gap:'12px', flexWrap:'wrap', alignItems:'flex-end',
+          boxShadow:'var(--card-shadow)' }}>
+        {[['FROM', fromDate, setFrom, 'date'], ['TO', toDate, setTo, 'date']].map(([lbl, val, set, type]) => (
+          <div key={lbl}>
+            <p style={{ fontSize:'10px', fontWeight:'800', color:'var(--text-muted)', marginBottom:'5px', letterSpacing:'0.08em' }}>{lbl}</p>
+            <input type={type} value={val} onChange={e => set(e.target.value)} style={iStyle} />
           </div>
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>To</p>
-            <input type="date" value={filters.to} onChange={e => setFilters(f => ({...f, to: e.target.value}))}
-              style={{ padding: '9px 12px', borderRadius: 10, border: '1px solid var(--input-border)', fontSize: 13, color: 'var(--text-primary)', outline: 'none', background: 'var(--input-bg)' }} />
-          </div>
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>City</p>
-            <select value={filters.city} onChange={e => setFilters(f => ({...f, city: e.target.value}))}
-              style={{ padding: '9px 12px', borderRadius: 10, border: '1px solid var(--input-border)', fontSize: 13, color: 'var(--text-primary)', outline: 'none', background: 'var(--input-bg)', cursor: 'pointer' }}>
-              <option value="all">All Cities</option>
-              {['Mumbai','Delhi','Bangalore','Chennai','Hyderabad','Goa'].map(c => <option key={c} value={c}>{c}</option>)}
+        ))}
+        {[['CITY', city, setCity, CITIES], ['CATEGORY', cat, setCat, CATS]].map(([lbl, val, set, opts]) => (
+          <div key={lbl}>
+            <p style={{ fontSize:'10px', fontWeight:'800', color:'var(--text-muted)', marginBottom:'5px', letterSpacing:'0.08em' }}>{lbl}</p>
+            <select value={val} onChange={e => set(e.target.value)} style={{ ...iStyle, cursor:'pointer' }}>
+              {opts.map(o => <option key={o}>{o}</option>)}
             </select>
           </div>
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</p>
-            <select value={filters.category} onChange={e => setFilters(f => ({...f, category: e.target.value}))}
-              style={{ padding: '9px 12px', borderRadius: 10, border: '1px solid var(--input-border)', fontSize: 13, color: 'var(--text-primary)', outline: 'none', background: 'var(--input-bg)', cursor: 'pointer' }}>
-              <option value="all">All Categories</option>
-              {['Luxury','Budget','Business','Resort'].map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          <button onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 900); }}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 20px', borderRadius: 10, border: 'none', background: '#0f172a', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', marginTop: 'auto' }}>
-            <Filter size={14} /> Apply Filters
+        ))}
+        <div style={{ display:'flex', gap:'8px', marginLeft:'auto' }}>
+          <button onClick={reset} title="Reset" style={{ padding:'9px 12px', borderRadius:'10px', border:'1px solid var(--card-border)', background:'var(--card-bg)', cursor:'pointer', display:'grid', placeItems:'center', color:'var(--text-secondary)' }}>
+            <RefreshCw size={14}/>
           </button>
-          <button onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 900); }}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 10, border: '1px solid var(--input-border)', background: 'var(--card-bg)', color: 'var(--text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', marginTop: 'auto' }}>
-            <RefreshCw size={14} />
+          <button onClick={apply} style={{ display:'flex', alignItems:'center', gap:'7px', padding:'9px 20px', borderRadius:'10px', border:'none',
+            background:'linear-gradient(135deg,#6366f1,#8b5cf6)', color:'white', fontSize:'13px', fontWeight:'700', cursor:'pointer',
+            boxShadow:'0 4px 14px rgba(99,102,241,0.35)' }}>
+            <SlidersHorizontal size={13}/> Apply
           </button>
         </div>
-      </Card>
+      </motion.div>
 
-      {/* ── KPI Cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
-        <KpiCard loading={loading} icon={<CreditCard size={20} />} label="Total Revenue" value="₹1.42Cr" sub="vs ₹1.18Cr last year" growth={20.3} color="#6366f1" />
-        <KpiCard loading={loading} icon={<Bed size={20} />} label="Occupancy Rate" value="82.4%" sub="Across all properties" growth={8.1} color="#10b981" />
-        <KpiCard loading={loading} icon={<Activity size={20} />} label="Total Bookings" value="4,820" sub="+340 this month" growth={12.5} color="#f59e0b" />
-        <KpiCard loading={loading} icon={<Users size={20} />} label="Active Guests" value="1,284" sub="Currently checked-in" growth={-3.2} color="#ec4899" />
-      </div>
-
-      {/* ── Revenue Analytics ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 16, marginBottom: 24 }}>
-        <Card>
-          <SectionTitle
-            title="Monthly Revenue Growth"
-            sub="Current vs previous year (₹ Lakhs)"
-            action={
-              <div style={{ display: 'flex', gap: 6 }}>
-                {['monthly','quarterly'].map(p => <PeriodBtn key={p} label={p.charAt(0).toUpperCase()+p.slice(1)} active={revPeriod===p} onClick={() => setRevPeriod(p)} />)}
-              </div>
-            }
-          />
-          {loading ? <Skeleton h={260} r={12} /> : (
-            <>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-                {[['#6366f1','Current Year'],['#94a3b8','Previous Year']].map(([c,l]) => (
-                  <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b' }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: c }} />{l}
-                  </div>
-                ))}
-              </div>
-              <div style={{ height: 240 }}>
-                <Line data={revenueLineConfig} options={chartOpts()} />
-              </div>
-            </>
-          )}
-        </Card>
-
-        <Card>
-          <SectionTitle title="Revenue by Hotel" sub="Top 5 properties (₹L)" />
-          {loading ? <Skeleton h={260} r={12} /> : (
-            <div style={{ height: 260 }}>
-              <Bar data={hotelBarConfig} options={chartOpts({ indexAxis: 'y', scales: { x: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 11 } } }, y: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } } } })} />
-            </div>
-          )}
-        </Card>
-      </div>
-
-      {/* ── Occupancy Analytics ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 16, marginBottom: 24 }}>
-        <Card>
-          <SectionTitle title="Occupancy by Hotel" sub="Current period" />
-          {loading ? <Skeleton h={220} r={12} /> : (
-            <div style={{ height: 220 }}>
-              <Doughnut data={occupancyDonutConfig} options={donutOpts} />
-            </div>
-          )}
-        </Card>
-
-        <Card>
-          <SectionTitle title="Occupancy Rate" sub="Per property breakdown" />
-          {loading
-            ? <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>{[...Array(5)].map((_,i) => <Skeleton key={i} h={18} r={6} />)}</div>
-            : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {occupancyLabels.map((name, i) => (
-                  <div key={name}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{name}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: occupancyColors[i] }}>{occupancyData[i]}%</span>
-                    </div>
-                    <div style={{ height: 8, borderRadius: 99, background: '#f1f5f9', overflow: 'hidden' }}>
-                      <motion.div
-                        initial={{ width: 0 }} animate={{ width: `${occupancyData[i]}%` }}
-                        transition={{ duration: 0.8, delay: i * 0.1 }}
-                        style={{ height: '100%', borderRadius: 99, background: occupancyColors[i] }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          }
-        </Card>
-      </div>
-
-      {/* ── Top Performing Hotels Table ── */}
-      <Card style={{ marginBottom: 24, padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9' }}>
-          <SectionTitle title="Top Performing Hotels" sub="Sortable by revenue, occupancy, and rating" />
-        </div>
+      {/* ── Metric Cards ── */}
+      <AnimatePresence>
         {loading ? (
-          <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[...Array(5)].map((_,i) => <Skeleton key={i} h={20} r={6} />)}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'20px', marginBottom:'24px' }}>
+            {[0,1,2,3].map(i => (
+              <div key={i} style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:'20px', padding:'22px', height:'170px', animation:'shimmer 1.5s infinite' }}>
+                <div style={{ width:'44px', height:'44px', borderRadius:'14px', background:'var(--bg-darker)', marginBottom:'16px' }} />
+                <div style={{ height:'28px', width:'60%', borderRadius:'8px', background:'var(--bg-darker)', marginBottom:'8px' }} />
+                <div style={{ height:'13px', width:'40%', borderRadius:'6px', background:'var(--bg-darker)' }} />
+              </div>
+            ))}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: 'var(--bg-darker)' }}>
-                  {[['#',''],['name','Hotel Name'],['city','City'],['revenue','Revenue'],['occupancy','Occupancy'],['rating','Rating'],['bookings','Bookings'],['trend','Trend']].map(([col, label]) => (
-                    <th key={col} onClick={() => col !== '#' && col !== 'trend' && handleSort(col)}
-                      className={col !== '#' && col !== 'trend' ? 'th-sort' : ''}
-                      style={{ textAlign: 'left', padding: '12px 16px', fontSize: 11, fontWeight: 800, color: 'var(--text-secondary)', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        {label} {col !== '#' && col !== 'trend' && <SortIcon col={col} />}
-                      </span>
-                    </th>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'20px', marginBottom:'24px' }}>
+            <MetricCard delay={0} gradient="linear-gradient(135deg,#10b981,#059669)" iconColor="#10b981"
+              icon={<Wallet/>} value="₹1.42Cr" label="Total Revenue" sub="vs ₹1.18Cr last year" trend={20.3} />
+            <MetricCard delay={0.08} gradient="linear-gradient(135deg,#8b5cf6,#6366f1)" iconColor="#8b5cf6"
+              icon={<BedDouble/>} value="82.4%" label="Occupancy Rate" sub="Across all properties" trend={8.1} ring={82} ringColor="#8b5cf6" />
+            <MetricCard delay={0.16} gradient="linear-gradient(135deg,#f97316,#ef4444)" iconColor="#f97316"
+              icon={<AlertTriangle/>} value="₹18.5L" label="Revenue Leakage" sub="Refunds · Cancellations · No-shows" trend={-4.2} invertTrend
+              extra={
+                <div style={{ display:'flex', gap:'5px', flexWrap:'wrap' }}>
+                  {[['Refunds','₹8L','#ef4444'],['Cancels','₹6L','#f97316'],['No-shows','₹4.5L','#f59e0b']].map(([l,v,c]) => (
+                    <span key={l} style={{ fontSize:'10px', fontWeight:'800', padding:'2px 8px', borderRadius:'6px', background:c+'18', color:c }}>{l} {v}</span>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...topHotels].sort((a,b) => {
-                  const va = sortCol === 'revenue' ? parseFloat(a.revenue) : sortCol === 'occupancy' ? a.occupancy : sortCol === 'rating' ? a.rating : a.bookings;
-                  const vb = sortCol === 'revenue' ? parseFloat(b.revenue) : sortCol === 'occupancy' ? b.occupancy : sortCol === 'rating' ? b.rating : b.bookings;
-                  return sortDir === 'asc' ? va - vb : vb - va;
-                }).map((h, i) => (
-                  <tr key={h.name} style={{ borderTop: '1px solid var(--card-border)', transition: 'background 0.15s' }}
-                    onMouseOver={e => e.currentTarget.style.background = 'var(--bg-darker)'}
-                    onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                    <td style={{ padding: '14px 16px', fontSize: 13, color: '#94a3b8', fontWeight: 700 }}>{i+1}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 34, height: 34, borderRadius: 10, background: `${occupancyColors[i % 5]}15`, display: 'grid', placeItems: 'center', color: occupancyColors[i % 5], fontWeight: 800, fontSize: 13 }}>
-                          {h.name.charAt(0)}
-                        </div>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{h.name}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: '#64748b' }}><MapPin size={12} />{h.city}</span>
-                    </td>
-                    <td style={{ padding: '14px 16px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{h.revenue}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 60, height: 6, borderRadius: 99, background: '#f1f5f9', overflow: 'hidden' }}>
-                          <div style={{ width: `${h.occupancy}%`, height: '100%', borderRadius: 99, background: h.occupancy > 80 ? '#10b981' : h.occupancy > 65 ? '#f59e0b' : '#ef4444' }} />
-                        </div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{h.occupancy}%</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: '#f59e0b' }}>
-                        <Star size={13} fill="#f59e0b" />{h.rating}
-                      </span>
-                    </td>
-                    <td style={{ padding: '14px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{h.bookings.toLocaleString()}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: h.trend === 'up' ? '#dcfce7' : '#fee2e2', color: h.trend === 'up' ? '#16a34a' : '#dc2626' }}>
-                        {h.trend === 'up' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                        {h.trend === 'up' ? 'Growing' : 'Declining'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </div>
+              }
+            />
+            <MetricCard delay={0.24} gradient="linear-gradient(135deg,#06b6d4,#0ea5e9)" iconColor="#06b6d4"
+              icon={<CreditCard/>} value="96.2%" label="Payment Success" sub="Successful transactions" trend={1.4} ring={96} ringColor="#06b6d4"
+              extra={
+                <div style={{ display:'flex', justifyContent:'space-between', padding:'8px 12px', borderRadius:'10px', background:'rgba(6,182,212,0.06)', border:'1px solid rgba(6,182,212,0.12)' }}>
+                  <span style={{ fontSize:'11px', color:'#10b981', fontWeight:'800' }}>✓ 96.2%</span>
+                  <span style={{ fontSize:'11px', color:'#ef4444', fontWeight:'800' }}>✗ 3.8%</span>
+                </div>
+              }
+            />
           </div>
         )}
-      </Card>
+      </AnimatePresence>
 
-      {/* ── Guest Analytics ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 16, marginBottom: 24 }}>
-        <Card>
-          <SectionTitle
-            title="Guest Trends"
-            sub="New vs returning guests over time"
-            action={
-              <div style={{ display: 'flex', gap: 6 }}>
-                {['monthly','daily'].map(p => <PeriodBtn key={p} label={p.charAt(0).toUpperCase()+p.slice(1)} active={guestPeriod===p} onClick={() => setGuestPeriod(p)} />)}
-              </div>
-            }
-          />
-          {loading ? <Skeleton h={220} r={12} /> : (
-            <>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                {[['#6366f1','New Guests'],['#10b981','Returning']].map(([c,l]) => (
-                  <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b' }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: c }} />{l}
-                  </div>
-                ))}
-              </div>
-              <div style={{ height: 220 }}>
-                <Line data={guestLineConfig} options={chartOpts()} />
-              </div>
-            </>
-          )}
-        </Card>
-
-        <Card>
-          <SectionTitle title="Guest Composition" sub="New vs returning split" />
-          {loading ? <Skeleton h={220} r={12} /> : (
-            <>
-              <div style={{ height: 180 }}>
-                <Pie data={guestPieConfig} options={pieOpts} />
-              </div>
-              <div style={{ display: 'flex', gap: 12, marginTop: 16, justifyContent: 'center' }}>
-                {[['#6366f1','New','62%'],['#10b981','Returning','38%']].map(([c,l,v]) => (
-                  <div key={l} style={{ textAlign: 'center', padding: '10px 16px', borderRadius: 12, background: `${c}10` }}>
-                    <p style={{ fontSize: 18, fontWeight: 800, color: c }}>{v}</p>
-                    <p style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{l}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </Card>
-      </div>
-
-      {/* ── Location + Booking Trends ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-        <Card>
-          <SectionTitle title="Revenue by City" sub="Top cities (₹ Lakhs)" />
-          {loading ? <Skeleton h={240} r={12} /> : (
-            <div style={{ height: 240 }}>
-              <Bar data={cityBarConfig} options={chartOpts()} />
+      {/* ── Charts Row ── */}
+      <div style={{ display:'grid', gridTemplateColumns:'1.1fr 0.9fr', gap:'20px', marginBottom:'20px' }}>
+        <GlassCard glow="#6366f1">
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px' }}>
+            <div>
+              <h3 style={{ fontSize:'15px', fontWeight:'800', color:'var(--text-primary)' }}>Revenue Growth</h3>
+              <p style={{ fontSize:'12px', color:'var(--text-secondary)', marginTop:'2px' }}>2025 vs 2024</p>
             </div>
-          )}
-        </Card>
+            <div style={{ display:'flex', gap:'3px', background:'var(--bg-darker)', borderRadius:'10px', padding:'3px' }}>
+              {['monthly','quarterly'].map(m => (
+                <button key={m} onClick={() => setRevMode(m)} style={{ padding:'5px 13px', borderRadius:'8px', border:'none', fontSize:'11px', fontWeight:'700', cursor:'pointer',
+                  background: revMode===m ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent',
+                  color: revMode===m ? 'white' : 'var(--text-secondary)', transition:'all 0.2s',
+                  boxShadow: revMode===m ? '0 2px 8px rgba(99,102,241,0.3)' : 'none' }}>
+                  {m === 'monthly' ? 'Monthly' : 'Quarterly'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ height:'230px' }}><Line data={lineData} options={chartBase} /></div>
+        </GlassCard>
 
-        <Card>
-          <SectionTitle title="Booking Trends" sub="Bookings vs cancellations" />
-          {loading ? <Skeleton h={240} r={12} /> : (
-            <>
-              <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
-                {[['#6366f1','Bookings'],['#fca5a5','Cancellations']].map(([c,l]) => (
-                  <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b' }}>
-                    <div style={{ width: 10, height: 10, borderRadius: 3, background: c }} />{l}
-                  </div>
-                ))}
-              </div>
-              <div style={{ height: 210 }}>
-                <Bar data={bookingBarConfig} options={chartOpts()} />
-              </div>
-              <div style={{ marginTop: 14, padding: '10px 14px', borderRadius: 10, background: '#fff7ed', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, color: '#92400e', fontWeight: 600 }}>Avg Cancellation Rate:</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: '#ef4444' }}>7.2%</span>
-                <TrendingDown size={14} color="#ef4444" />
-              </div>
-            </>
-          )}
-        </Card>
+        <GlassCard glow="#10b981">
+          <div style={{ marginBottom:'20px' }}>
+            <h3 style={{ fontSize:'15px', fontWeight:'800', color:'var(--text-primary)' }}>Revenue by Hotel</h3>
+            <p style={{ fontSize:'12px', color:'var(--text-secondary)', marginTop:'2px' }}>Top 5 — 2025 vs 2024</p>
+          </div>
+          <div style={{ height:'230px' }}><Bar data={barData} options={chartBase} /></div>
+        </GlassCard>
       </div>
 
-      {/* ── Toast ── */}
-      {toast && (
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-          style={{ position: 'fixed', bottom: 32, right: 32, zIndex: 9999, background: '#0f172a', color: 'white', padding: '14px 22px', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 20px 40px rgba(0,0,0,0.3)', fontSize: 14, fontWeight: 600 }}>
-          <ArrowUpRight size={16} color="#4ade80" /> Report exported successfully
-        </motion.div>
-      )}
-    </motion.div>
+      {/* ── Insight Table ── */}
+      <GlassCard style={{ marginBottom:'20px' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px', flexWrap:'wrap', gap:'12px' }}>
+          <div>
+            <h3 style={{ fontSize:'15px', fontWeight:'800', color:'var(--text-primary)' }}>Hotel Insights Overview</h3>
+            <p style={{ fontSize:'12px', color:'var(--text-secondary)', marginTop:'2px' }}>Performance, risk & payment health across all properties</p>
+          </div>
+          {/* Tab filter */}
+          <div style={{ display:'flex', gap:'4px', background:'var(--bg-darker)', borderRadius:'12px', padding:'4px' }}>
+            {[['all','All'],['top','Top'],['avg','Average'],['risk','At Risk']].map(([k,l]) => (
+              <button key={k} onClick={() => setActiveTab(k)} style={{ padding:'5px 13px', borderRadius:'8px', border:'none', fontSize:'11px', fontWeight:'700', cursor:'pointer',
+                background: activeTab===k ? 'var(--card-bg)' : 'transparent',
+                color: activeTab===k ? 'var(--text-primary)' : 'var(--text-secondary)',
+                boxShadow: activeTab===k ? 'var(--card-shadow)' : 'none', transition:'all 0.2s' }}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ overflowX:'auto' }}>
+          <table style={{ width:'100%', borderCollapse:'collapse', minWidth:'820px' }}>
+            <thead>
+              <tr>
+                {['#','Hotel','City','Revenue','Growth','Occupancy','Cancel Rate','Failure Reason','Status'].map(h => (
+                  <th key={h} style={{ padding:'10px 14px', textAlign:'left', fontSize:'10px', fontWeight:'900',
+                    color:'var(--text-muted)', letterSpacing:'0.08em', background:'var(--bg-darker)',
+                    borderBottom:'1px solid var(--card-border)',
+                    ...(h==='#' ? { borderRadius:'10px 0 0 10px' } : h==='Status' ? { borderRadius:'0 10px 10px 0' } : {}) }}>
+                    {h.toUpperCase()}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredHotels.map((h, i) => {
+                const sm = STATUS_META[h.status];
+                const initials = h.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+                const avatarColors = ['#6366f1','#10b981','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#ef4444','#f97316'];
+                const ac = avatarColors[i % avatarColors.length];
+                return (
+                  <motion.tr key={h.name} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay: i*0.04 }}
+                    style={{ borderBottom:'1px solid var(--card-border)', transition:'background 0.15s', cursor:'default' }}
+                    onMouseOver={e => e.currentTarget.style.background='rgba(99,102,241,0.04)'}
+                    onMouseOut={e => e.currentTarget.style.background='transparent'}>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <div style={{ width:'26px', height:'26px', borderRadius:'8px',
+                        background: h.rank===1?'linear-gradient(135deg,#fbbf24,#f59e0b)':h.rank===2?'linear-gradient(135deg,#94a3b8,#64748b)':h.rank===3?'linear-gradient(135deg,#f97316,#ea580c)':`linear-gradient(135deg,${avatarColors[i % avatarColors.length]}99,${avatarColors[i % avatarColors.length]}cc)`,
+                        display:'grid', placeItems:'center', boxShadow:'0 2px 8px rgba(0,0,0,0.15)' }}>
+                        <span style={{ fontSize:'11px', fontWeight:'900', color:'white' }}>{h.rank}</span>
+                      </div>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                        <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:`linear-gradient(135deg,${ac}cc,${ac})`,
+                          display:'grid', placeItems:'center', flexShrink:0, boxShadow:`0 3px 10px ${ac}40` }}>
+                          <span style={{ fontSize:'11px', fontWeight:'900', color:'white' }}>{initials}</span>
+                        </div>
+                        <span style={{ fontSize:'13px', fontWeight:'700', color:'var(--text-primary)' }}>{h.name}</span>
+                      </div>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <span style={{ fontSize:'12px', color:'var(--text-secondary)', display:'inline-flex', alignItems:'center', gap:'3px' }}>
+                        <MapPin size={10}/>{h.city}
+                      </span>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <span style={{ fontSize:'13px', fontWeight:'800', color: h.rev==='—'?'var(--text-muted)':'var(--text-primary)' }}>{h.rev}</span>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      {h.growth !== null ? (
+                        <span style={{ fontSize:'11px', fontWeight:'800', color:'#10b981', background:'rgba(16,185,129,0.1)', padding:'3px 9px', borderRadius:'20px', display:'inline-flex', alignItems:'center', gap:'3px' }}>
+                          <TrendingUp size={10}/>+{h.growth}%
+                        </span>
+                      ) : (
+                        <span style={{ fontSize:'11px', fontWeight:'800', color:'#ef4444', background:'rgba(239,68,68,0.1)', padding:'3px 9px', borderRadius:'20px', display:'inline-flex', alignItems:'center', gap:'3px' }}>
+                          <TrendingDown size={10}/>Low
+                        </span>
+                      )}
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}><OccBar pct={h.occ} /></td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <span style={{ fontSize:'12px', fontWeight:'800', color: h.cancel<10?'#10b981':h.cancel<=20?'#f59e0b':'#ef4444' }}>{h.cancel}%</span>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <span style={{ fontSize:'11px', fontWeight:'700', color:h.failC, background:h.failC+'15', padding:'3px 9px', borderRadius:'7px' }}>{h.fail}</span>
+                    </td>
+
+                    <td style={{ padding:'14px 14px' }}>
+                      <span style={{ fontSize:'11px', fontWeight:'800', padding:'4px 11px', borderRadius:'20px', background:sm.bg, color:sm.color, display:'inline-flex', alignItems:'center', gap:'5px' }}>
+                        <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:sm.dot, display:'inline-block' }}/>
+                        {sm.label}
+                      </span>
+                    </td>
+                  </motion.tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+
+      {/* ── Bottom Charts ── */}
+      <div style={{ display:'grid', gridTemplateColumns:'0.8fr 1.2fr', gap:'20px' }}>
+        <GlassCard glow="#818cf8">
+          <div style={{ marginBottom:'20px' }}>
+            <h3 style={{ fontSize:'15px', fontWeight:'800', color:'var(--text-primary)' }}>Revenue Distribution</h3>
+            <p style={{ fontSize:'12px', color:'var(--text-secondary)', marginTop:'2px' }}>By category this year</p>
+          </div>
+          <div style={{ height:'220px', position:'relative' }}>
+            <Doughnut data={donutData} options={donutOpts} />
+            <div style={{ position:'absolute', top:'42%', left:'50%', transform:'translate(-50%,-50%)', textAlign:'center', pointerEvents:'none' }}>
+              <p style={{ fontSize:'18px', fontWeight:'900', color:'var(--text-primary)', lineHeight:1 }}>₹1.42Cr</p>
+              <p style={{ fontSize:'10px', color:'var(--text-muted)', marginTop:'2px' }}>Total</p>
+            </div>
+          </div>
+          {/* Legend pills */}
+          <div style={{ display:'flex', gap:'8px', flexWrap:'wrap', marginTop:'16px' }}>
+            {distData.labels.map((l,i) => (
+              <span key={l} style={{ fontSize:'11px', fontWeight:'700', padding:'3px 10px', borderRadius:'20px', background:distData.colors[i]+'18', color:distData.colors[i] }}>
+                {l} {distData.values[i]}%
+              </span>
+            ))}
+          </div>
+        </GlassCard>
+
+        <GlassCard glow="#34d399">
+          <div style={{ marginBottom:'20px' }}>
+            <h3 style={{ fontSize:'15px', fontWeight:'800', color:'var(--text-primary)' }}>City-wise Performance</h3>
+            <p style={{ fontSize:'12px', color:'var(--text-secondary)', marginTop:'2px' }}>Revenue in ₹L by city</p>
+          </div>
+          <div style={{ height:'260px' }}>
+            <Bar data={cityBarData} options={{ ...chartBase,
+              plugins:{ ...chartBase.plugins, legend:{ display:false } },
+              scales:{ x:{ grid:{ display:false }, ticks:{ color:'#64748b', font:{ size:11 } }, border:{ display:false } },
+                y:{ grid:{ color:'rgba(148,163,184,0.06)' }, ticks:{ color:'#64748b', font:{ size:11 }, callback: v => '₹'+v+'L' }, border:{ display:false } } }
+            }} />
+          </div>
+        </GlassCard>
+      </div>
+
+      <style>{`
+        @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.5} }
+      `}</style>
+    </div>
   );
 };
 
 export default Analytics;
-
