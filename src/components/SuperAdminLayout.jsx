@@ -31,7 +31,7 @@ const SuperAdminLayout = () => {
     { icon: <Building2 size={20} />,      label: 'Company Management', path: '/super-admin/companies' },
     { icon: <Package size={20} />,        label: 'Subscription Plans', path: '/super-admin/plans'     },
     { icon: <BarChart2 size={20} />,      label: 'Analytics',          path: '/super-admin/analytics' },
-    // { icon: <Settings size={20} />,       label: 'Global Settings',    path: '/super-admin/settings'  },
+    { icon: <Settings size={20} />,       label: 'Global Settings',    path: '/super-admin/settings'  },
   ];
 
   const handleLogout = () => { localStorage.removeItem('userType'); navigate('/'); };

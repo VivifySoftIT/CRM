@@ -1,91 +1,89 @@
-import React from 'react';
-import { FolderOpen, FileText, Image, File, UploadCloud, Search, MoreVertical, Download } from 'lucide-react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Folder, FileText, Download, Trash2, Upload, Search, Plus, File, Image, FileSpreadsheet } from 'lucide-react';
 
-const Documents = () => {
-    const folders = [
-        { name: "Contracts", items: 45, size: "128 MB", color: "var(--primary)" },
-        { name: "Invoices", items: 120, size: "45 MB", color: "var(--success)" },
-        { name: "Proposals", items: 85, size: "210 MB", color: "var(--accent)" },
-        { name: "NDAs", items: 32, size: "18 MB", color: "var(--warning)" }
-    ];
+const DOCS = [
+  { id:1, name:'Johnson-Smith Wedding Contract.pdf', type:'pdf',   size:'2.4 MB', folder:'Contracts',  date:'2026-03-20', uploader:'Admin' },
+  { id:2, name:'Q1 Revenue Report.xlsx',             type:'excel', size:'1.1 MB', folder:'Reports',    date:'2026-03-18', uploader:'Manager' },
+  { id:3, name:'Room 301 Inspection Photos.zip',     type:'image', size:'8.2 MB', folder:'Rooms',      date:'2026-03-15', uploader:'Maintenance' },
+  { id:4, name:'Staff Handbook 2026.pdf',            type:'pdf',   size:'3.7 MB', folder:'HR',         date:'2026-03-10', uploader:'HR' },
+  { id:5, name:'TechFlow Conference Agreement.pdf',  type:'pdf',   size:'1.8 MB', folder:'Contracts',  date:'2026-03-08', uploader:'Admin' },
+  { id:6, name:'February Occupancy Report.xlsx',     type:'excel', size:'0.9 MB', folder:'Reports',    date:'2026-03-01', uploader:'Manager' },
+  { id:7, name:'Hotel Floor Plan.pdf',               type:'pdf',   size:'5.2 MB', folder:'Operations', date:'2026-02-20', uploader:'Admin' },
+  { id:8, name:'Guest Feedback Summary.pdf',         type:'pdf',   size:'1.3 MB', folder:'Reports',    date:'2026-02-15', uploader:'Manager' },
+];
 
-    const recentFiles = [
-        { name: "Spark_Solutions_Agreement_v2.pdf", type: "pdf", size: "2.4 MB", date: "Mar 19, 2026" },
-        { name: "Q1_Financial_Report.xlsx", type: "excel", size: "1.1 MB", date: "Mar 18, 2026" },
-        { name: "Project_Architecture.png", type: "image", size: "4.8 MB", date: "Mar 15, 2026" },
-        { name: "Client_Requirements.docx", type: "doc", size: "850 KB", date: "Mar 14, 2026" }
-    ];
+const FOLDERS = ['All','Contracts','Reports','Rooms','HR','Operations'];
+const TYPE_ICON = { pdf: FileText, excel: FileSpreadsheet, image: Image, default: File };
+const TYPE_COLOR = { pdf:'#dc2626', excel:'#059669', image:'#7c3aed', default:'#2563eb' };
 
-    const getIcon = (type) => {
-        switch(type) {
-            case 'pdf': return <FileText color="var(--danger)" size={24} />;
-            case 'image': return <Image color="var(--primary)" size={24} />;
-            case 'excel': return <FileText color="var(--success)" size={24} />;
-            default: return <File color="var(--secondary)" size={24} />;
-        }
-    };
+export default function Documents() {
+  const [docs, setDocs]     = useState(DOCS);
+  const [folder, setFolder] = useState('All');
+  const [search, setSearch] = useState('');
 
-    return (
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <div className="glass-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px', border: 'none', width: '300px' }}>
-                    <Search size={18} color="var(--text-secondary)" />
-                    <input type="text" placeholder="Search files & folders..." style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--text-primary)', width: '100%' }} />
-                </div>
-                <button className="btn-primary">
-                    <UploadCloud size={18} /> Upload Files
-                </button>
-            </div>
+  const filtered = docs.filter(d => (folder==='All'||d.folder===folder) && (!search||d.name.toLowerCase().includes(search.toLowerCase())));
 
-            <h4 style={{ fontSize: '18px', marginBottom: '20px' }}>Folders</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-                {folders.map((folder, idx) => (
-                    <motion.div whileHover={{ scale: 1.02 }} key={idx} className="glass-card folder-card" style={{ padding: '24px', cursor: 'pointer' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                            <FolderOpen size={40} color={folder.color} fill={`${folder.color}40`} strokeWidth={1.5} />
-                            <MoreVertical size={20} color="var(--text-secondary)" />
-                        </div>
-                        <h4 style={{ fontSize: '16px', marginBottom: '4px' }}>{folder.name}</h4>
-                        <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{folder.items} files • {folder.size}</p>
-                    </motion.div>
-                ))}
-            </div>
+  const card = { background:'var(--card-bg)', borderRadius:10, border:'1px solid var(--card-border)', boxShadow:'var(--card-shadow)' };
 
-            <h4 style={{ fontSize: '18px', marginBottom: '20px' }}>Recent Files</h4>
-            <div className="glass-card">
-                {recentFiles.map((file, idx) => (
-                    <div key={idx} className="file-row" style={{ 
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                        padding: '16px 24px', borderBottom: idx === recentFiles.length - 1 ? 'none' : '1px solid var(--glass-border)' 
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0, 0, 0,0.05)', display: 'grid', placeItems: 'center' }}>
-                                {getIcon(file.type)}
-                            </div>
-                            <div>
-                                <p style={{ fontWeight: '500', fontSize: '14px' }}>{file.name}</p>
-                                <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{file.size} • Uploaded {file.date}</p>
-                            </div>
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button className="btn-outline" style={{ padding: '8px', borderRadius: '8px' }}><Download size={16} /></button>
-                            <button className="btn-outline" style={{ padding: '8px', borderRadius: '8px' }}><MoreVertical size={16} /></button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <style>{`
-                .folder-card:hover {
-                    background: rgba(0, 0, 0,0.06);
-                    border-color: var(--primary);
-                }
-                .file-row:hover {
-                    background: rgba(0, 0, 0,0.02);
-                }
-            `}</style>
-        </motion.div>
-    );
-};
+  return (
+    <div style={{ background:'var(--bg-page)', minHeight:'100%' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20, flexWrap:'wrap', gap:12 }}>
+        <div>
+          <h1 style={{ fontSize:22, fontWeight:800, color:'var(--text-primary)', margin:0 }}>Documents</h1>
+          <p style={{ fontSize:13, color:'var(--text-secondary)', margin:'4px 0 0' }}>{docs.length} files stored</p>
+        </div>
+        <button className="b24-btn b24-btn-primary"><Upload size={13}/> Upload File</button>
+      </div>
 
-export default Documents;
+      <div style={{ display:'grid', gridTemplateColumns:'200px 1fr', gap:20 }}>
+        {/* Folder sidebar */}
+        <div style={{ ...card, padding:'14px', height:'fit-content' }}>
+          <div style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:10 }}>Folders</div>
+          {FOLDERS.map(f => (
+            <button key={f} onClick={()=>setFolder(f)}
+              style={{ width:'100%', display:'flex', alignItems:'center', gap:8, padding:'8px 10px', borderRadius:6, border:'none', background:folder===f?'#eff6ff':'transparent', color:folder===f?'#2563eb':'var(--text-secondary)', cursor:'pointer', fontSize:13, fontWeight:folder===f?700:500, marginBottom:2, transition:'all 0.12s' }}>
+              <Folder size={14} color={folder===f?'#2563eb':'var(--text-muted)'}/>{f}
+              <span style={{ marginLeft:'auto', fontSize:11, color:'var(--text-muted)' }}>{f==='All'?docs.length:docs.filter(d=>d.folder===f).length}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* File list */}
+        <div>
+          <div style={{ ...card, padding:'10px 14px', marginBottom:14, display:'flex', alignItems:'center', gap:8 }}>
+            <Search size={13} color='var(--text-muted)'/>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search files..." style={{ background:'transparent', border:'none', color:'var(--text-primary)', outline:'none', fontSize:13, flex:1 }}/>
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {filtered.map((doc,i) => {
+              const Icon = TYPE_ICON[doc.type] || TYPE_ICON.default;
+              const color = TYPE_COLOR[doc.type] || TYPE_COLOR.default;
+              return (
+                <motion.div key={doc.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.04 }}
+                  style={{ ...card, padding:'14px 16px', display:'flex', alignItems:'center', gap:14 }}>
+                  <div style={{ width:40, height:40, borderRadius:8, background:`${color}15`, display:'grid', placeItems:'center', flexShrink:0 }}>
+                    <Icon size={18} color={color}/>
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{doc.name}</div>
+                    <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:2 }}>{doc.folder} · {doc.size} · {doc.date} · {doc.uploader}</div>
+                  </div>
+                  <div style={{ display:'flex', gap:6 }}>
+                    <button style={{ width:28, height:28, borderRadius:4, border:'1px solid #bfdbfe', background:'#eff6ff', display:'grid', placeItems:'center', cursor:'pointer', color:'#2563eb' }}><Download size={12}/></button>
+                    <button onClick={()=>setDocs(ds=>ds.filter(d=>d.id!==doc.id))} style={{ width:28, height:28, borderRadius:4, border:'1px solid #fecaca', background:'#fef2f2', display:'grid', placeItems:'center', cursor:'pointer', color:'#dc2626' }}><Trash2 size={12}/></button>
+                  </div>
+                </motion.div>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div style={{ ...card, padding:'60px', textAlign:'center', color:'var(--text-muted)' }}>
+                <FileText size={40} style={{ margin:'0 auto 12px', opacity:0.3 }}/><p>No files found</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

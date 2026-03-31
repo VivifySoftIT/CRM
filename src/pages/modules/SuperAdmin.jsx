@@ -351,6 +351,54 @@ const SuperAdmin = () => {
               />
             </div>
           </motion.div>
+          <HotelPerformanceTable />
+        </motion.div>
+      );
+    }
+
+    // ── ANALYTICS ──────────────────────────────────────────────────────────────
+    if (location.pathname.includes('/super-admin/analytics')) {
+      return (
+        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}>
+          <div style={{ marginBottom:'32px' }}>
+            <h1 style={{ fontSize:'28px', fontWeight:'800', color:'var(--text-primary)', marginBottom:'4px' }}>Platform Analytics</h1>
+            <p style={{ color:'var(--text-secondary)', fontSize:'14px' }}>In-depth analysis of booking trends and revenue growth.</p>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'2fr 1.2fr', gap:'28px', marginBottom:'28px' }}>
+            <div className="glass-card" style={{ padding:'28px', background:'var(--card-bg)' }}>
+              <h3 style={{ fontSize:'16px', fontWeight:'800', marginBottom:'20px' }}>Historical Growth</h3>
+              <div style={{ height:'300px' }}>
+                <Line
+                  data={{ labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets:[
+                    { label:'This Year', data:[120,150,140,180,210,230,220,260,280,310,340,320], borderColor:'#6366f1', borderWidth:3, pointRadius:4, fill:true, backgroundColor:'rgba(99,102,241,0.08)', tension:0.4 },
+                    { label:'Last Year', data:[90,110,120,130,160,180,170,190,210,220,250,230], borderColor:'var(--text-muted)', borderDash:[5,5], borderWidth:2, pointRadius:0, fill:false, tension:0.4 },
+                  ]}}
+                  options={{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'top', align:'end' } }, scales:{ y:{ grid:{ color:'rgba(0,0,0,0.05)' } } } }}
+                />
+              </div>
+            </div>
+            <div className="glass-card" style={{ padding:'28px', background:'var(--card-bg)' }}>
+              <h3 style={{ fontSize:'16px', fontWeight:'800', marginBottom:'20px' }}>Modules Adoption</h3>
+              <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+                {[
+                  { label:'Guest Directory', pct:98, color:'#10b981' },
+                  { label:'Billing Suite',   pct:82, color:'#6366f1' },
+                  { label:'Event Engine',    pct:45, color:'#f59e0b' },
+                  { label:'AI Sales Bot',    pct:30, color:'#ef4444' },
+                ].map(m => (
+                  <div key={m.label}>
+                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:'13px', fontWeight:'700', marginBottom:'4px' }}>
+                      <span>{m.label}</span>
+                      <span>{m.pct}%</span>
+                    </div>
+                    <div style={{ height:'8px', background:'var(--card-border)', borderRadius:'4px', overflow:'hidden' }}>
+                      <motion.div initial={{ width:0 }} animate={{ width:`${m.pct}%` }} style={{ height:'100%', background:m.color }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </motion.div>
       );
     }

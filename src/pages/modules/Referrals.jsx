@@ -1,118 +1,91 @@
-import React from 'react';
-import { Share2, Gift, Users, Copy, Check, TrendingUp, Award } from 'lucide-react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Bell, Check, BedDouble, CreditCard, Wrench, Star, X, CheckCircle2 } from 'lucide-react';
 
-const Referrals = () => {
-    const topReferrers = [
-        { name: "Alice Johnson", company: "Spark Solutions", referrals: 15, converted: 8, rewards: "$4,000", rank: 1 },
-        { name: "Bob Smith", company: "Vertex Corp", referrals: 8, converted: 3, rewards: "$1,500", rank: 2 },
-        { name: "Charlie Brown", company: "NexGen", referrals: 5, converted: 2, rewards: "$1,000", rank: 3 }
-    ];
+const INIT_NOTIFS = [
+  { id:1, type:'booking',     icon: BedDouble,    color:'#2563eb', bg:'#dbeafe', title:'New Booking Created',          desc:'Alice Johnson booked Suite 301 for Mar 22–26',    time:'5 min ago',  read:false, urgent:false },
+  { id:2, type:'payment',     icon: CreditCard,   color:'#dc2626', bg:'#fee2e2', title:'Payment Pending',               desc:'Invoice #INV-2401 for $2,400 is overdue',         time:'12 min ago', read:false, urgent:true  },
+  { id:3, type:'maintenance', icon: Wrench,       color:'#d97706', bg:'#fef3c7', title:'Maintenance Request',           desc:'Room 304 — AC not working. Reported by guest.',   time:'28 min ago', read:false, urgent:true  },
+  { id:4, type:'feedback',    icon: Star,         color:'#059669', bg:'#d1fae5', title:'New 5-Star Review',             desc:'George Clooney left a 5-star review for Suite 302',time:'1 hour ago', read:true,  urgent:false },
+  { id:5, type:'booking',     icon: BedDouble,    color:'#2563eb', bg:'#dbeafe', title:'Check-in Reminder',             desc:'Bob Smith arriving today at 2:00 PM — Room 205',  time:'2 hours ago',read:true,  urgent:false },
+  { id:6, type:'payment',     icon: CreditCard,   color:'#059669', bg:'#d1fae5', title:'Payment Received',              desc:'$996 received from Alice Johnson via Credit Card', time:'3 hours ago',read:true,  urgent:false },
+  { id:7, type:'maintenance', icon: Wrench,       color:'#059669', bg:'#d1fae5', title:'Maintenance Resolved',          desc:'Room 405 TV remote issue resolved by Housekeeping',time:'4 hours ago',read:true,  urgent:false },
+  { id:8, type:'booking',     icon: BedDouble,    color:'#7c3aed', bg:'#ede9fe', title:'Upcoming Check-out',            desc:'Ethan Hunt checking out today from Deluxe 208',   time:'5 hours ago',read:true,  urgent:false },
+  { id:9, type:'feedback',    icon: Star,         color:'#dc2626', bg:'#fee2e2', title:'Negative Review Alert',         desc:'1-star review from Ethan Hunt — needs attention', time:'Yesterday',  read:false, urgent:true  },
+  { id:10,type:'payment',     icon: CreditCard,   color:'#d97706', bg:'#fef3c7', title:'Partial Payment Received',      desc:'$149 partial payment from Bob Smith — $298 pending',time:'Yesterday', read:true,  urgent:false },
+];
 
-    const recentReferrals = [
-        { referrer: "Alice Johnson", referred: "Jane Doe (TechFlow)", status: "Converted", date: "Mar 18, 2026", reward: "+$500" },
-        { referrer: "Bob Smith", referred: "Mark Otto (Bootstrap Inc)", status: "In Pipeline", date: "Mar 15, 2026", reward: "Pending" },
-        { referrer: "David Wilson", referred: "Sarah Connor (SkyNet)", status: "Lost", date: "Mar 10, 2026", reward: "$0" }
-    ];
+const TYPE_FILTERS = ['All','booking','payment','maintenance','feedback'];
 
-    return (
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <div>
-                    <h3 style={{ fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        Referral Program <Share2 color="var(--primary)" size={28} />
-                    </h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Track word-of-mouth growth and reward loyal customers.</p>
-                </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button className="btn-outline">
-                        <Gift size={18} /> Manage Rewards
-                    </button>
-                    <button className="btn-primary">
-                        <Share2 size={18} /> Generate Link
-                    </button>
-                </div>
-            </div>
+export default function Referrals() {
+  const [notifs, setNotifs] = useState(INIT_NOTIFS);
+  const [filter, setFilter] = useState('All');
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
-                <div className="glass-card" style={{ padding: '24px' }}>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Total Referrals</p>
-                    <h3 style={{ fontSize: '32px' }}>142</h3>
-                    <p style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', marginTop: '8px' }}><TrendingUp size={14} /> +12 this month</p>
-                </div>
-                <div className="glass-card" style={{ padding: '24px' }}>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Conversion Rate</p>
-                    <h3 style={{ fontSize: '32px' }}>34%</h3>
-                    <p style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', marginTop: '8px' }}><TrendingUp size={14} /> +2.4% vs last Q</p>
-                </div>
-                <div className="glass-card" style={{ padding: '24px' }}>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Active Advocates</p>
-                    <h3 style={{ fontSize: '32px' }}>45</h3>
-                    <p style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', marginTop: '8px' }}><Users size={14} /> out of 510 clients</p>
-                </div>
-                <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02))', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                    <p style={{ color: 'var(--success)', fontSize: '14px', marginBottom: '8px', fontWeight: '600' }}>Rewards Paid (YTD)</p>
-                    <h3 style={{ fontSize: '32px', color: 'var(--text-primary)' }}>$12,450</h3>
-                    <button className="btn-outline" style={{ marginTop: '12px', padding: '6px 12px', fontSize: '12px', borderColor: 'var(--success)', color: 'var(--success)' }}>View Payouts</button>
-                </div>
-            </div>
+  const markRead    = (id) => setNotifs(ns => ns.map(n => n.id===id ? {...n,read:true} : n));
+  const markAllRead = ()   => setNotifs(ns => ns.map(n => ({...n,read:true})));
+  const dismiss     = (id) => setNotifs(ns => ns.filter(n => n.id!==id));
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-                <div className="glass-card" style={{ padding: '32px' }}>
-                    <h4 style={{ fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <Award size={20} color="var(--primary)" /> Top Advocates
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {topReferrers.map((ref, idx) => (
-                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px', background: idx === 0 ? 'rgba(99, 102, 241, 0.1)' : 'rgba(0, 0, 0,0.02)', border: idx === 0 ? '1px solid var(--primary)' : '1px solid var(--glass-border)' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: idx === 0 ? 'var(--warning)' : idx === 1 ? '#94a3b8' : '#cd7f32', display: 'grid', placeItems: 'center', fontSize: '16px', fontWeight: '800', color: idx === 0 ? '#000' : '#fff' }}>
-                                    {ref.rank}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <h5 style={{ fontSize: '16px', marginBottom: '2px' }}>{ref.name}</h5>
-                                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{ref.company}</p>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontWeight: '700', color: 'var(--primary)' }}>{ref.rewards}</p>
-                                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{ref.converted}/{ref.referrals} won</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+  const filtered = notifs.filter(n => filter==='All' || n.type===filter);
+  const unreadCount = notifs.filter(n=>!n.read).length;
 
-                <div className="glass-card" style={{ padding: '32px' }}>
-                     <h4 style={{ fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <Share2 size={20} color="var(--accent)" /> Recent Referrals
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {recentReferrals.map((item, idx) => (
-                            <div key={idx} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) 80px', alignItems: 'center', gap: '16px', padding: '16px', borderBottom: idx !== recentReferrals.length - 1 ? '1px solid var(--glass-border)' : 'none' }}>
-                                <div>
-                                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Referrer</p>
-                                    <h5 style={{ fontSize: '14px' }}>{item.referrer}</h5>
-                                </div>
-                                <div>
-                                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Referred lead</p>
-                                    <h5 style={{ fontSize: '14px' }}>{item.referred}</h5>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <span style={{ 
-                                        padding: '4px 8px', borderRadius: '12px', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase',
-                                        background: item.status === 'Converted' ? 'rgba(16, 185, 129, 0.1)' : item.status === 'Lost' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                        color: item.status === 'Converted' ? 'var(--success)' : item.status === 'Lost' ? 'var(--danger)' : 'var(--warning)',
-                                    }}>
-                                        {item.status}
-                                    </span>
-                                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px' }}>{item.reward}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
+  const card = { background:'var(--card-bg)', borderRadius:10, border:'1px solid var(--card-border)', boxShadow:'var(--card-shadow)' };
 
-export default Referrals;
+  return (
+    <div style={{ background:'var(--bg-page)', minHeight:'100%' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20, flexWrap:'wrap', gap:12 }}>
+        <div>
+          <h1 style={{ fontSize:22, fontWeight:800, color:'var(--text-primary)', margin:0, display:'flex', alignItems:'center', gap:10 }}>
+            Notifications
+            {unreadCount > 0 && <span style={{ fontSize:13, fontWeight:700, padding:'2px 10px', borderRadius:20, background:'#fee2e2', color:'#dc2626' }}>{unreadCount} unread</span>}
+          </h1>
+          <p style={{ fontSize:13, color:'var(--text-secondary)', margin:'4px 0 0' }}>Hotel alerts and activity updates</p>
+        </div>
+        {unreadCount > 0 && (
+          <button className="b24-btn b24-btn-secondary" onClick={markAllRead}><CheckCircle2 size={13}/> Mark All Read</button>
+        )}
+      </div>
+
+      {/* Filter tabs */}
+      <div style={{ display:'flex', gap:8, marginBottom:18, flexWrap:'wrap' }}>
+        {TYPE_FILTERS.map(f => (
+          <button key={f} onClick={()=>setFilter(f)} className={`b24-btn ${filter===f?'b24-btn-primary':'b24-btn-secondary'}`} style={{ fontSize:12, textTransform:'capitalize' }}>
+            {f === 'All' ? 'All' : f.charAt(0).toUpperCase()+f.slice(1)+'s'}
+          </button>
+        ))}
+      </div>
+
+      {/* Notification list */}
+      <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+        {filtered.length === 0 ? (
+          <div style={{ ...card, padding:'60px', textAlign:'center', color:'var(--text-muted)' }}>
+            <Bell size={40} style={{ margin:'0 auto 12px', opacity:0.3 }}/>
+            <p>No notifications</p>
+          </div>
+        ) : filtered.map((n,i) => {
+          const Icon = n.icon;
+          return (
+            <motion.div key={n.id} initial={{ opacity:0, y:4 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
+              onClick={() => markRead(n.id)}
+              style={{ ...card, padding:'14px 18px', display:'flex', alignItems:'flex-start', gap:14, cursor:'pointer', opacity: n.read ? 0.75 : 1, borderLeft:`3px solid ${n.read?'var(--card-border)':n.color}`, transition:'all 0.12s' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(37,99,235,0.02)'}
+              onMouseLeave={e=>e.currentTarget.style.background='var(--card-bg)'}>
+              <div style={{ width:40, height:40, borderRadius:10, background:n.bg, display:'grid', placeItems:'center', flexShrink:0 }}>
+                <Icon size={18} color={n.color}/>
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
+                  <span style={{ fontSize:13, fontWeight: n.read?600:800, color:'var(--text-primary)' }}>{n.title}</span>
+                  {n.urgent && <span style={{ fontSize:9, fontWeight:700, padding:'1px 6px', borderRadius:10, background:'#fee2e2', color:'#dc2626' }}>URGENT</span>}
+                  {!n.read && <div style={{ width:7, height:7, borderRadius:'50%', background:n.color, flexShrink:0 }}/>}
+                </div>
+                <p style={{ fontSize:12, color:'var(--text-secondary)', margin:0, lineHeight:1.5 }}>{n.desc}</p>
+                <span style={{ fontSize:11, color:'var(--text-muted)', marginTop:4, display:'block' }}>{n.time}</span>
+              </div>
+              <button onClick={e=>{e.stopPropagation();dismiss(n.id);}} style={{ background:'transparent', border:'none', cursor:'pointer', color:'var(--text-muted)', padding:4, flexShrink:0 }}><X size={14}/></button>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

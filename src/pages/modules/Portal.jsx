@@ -1,108 +1,144 @@
-import React from 'react';
-import { Layout, Share, Lock, ExternalLink, Settings, Eye } from 'lucide-react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Search, LogIn, LogOut, Check, X, User, Home, Calendar, CreditCard, RefreshCw } from 'lucide-react';
 
-const Portal = () => {
-    return (
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-                <div>
-                    <h3 style={{ fontSize: '24px', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        Customer Portal Settings <Layout color="var(--primary)" size={28} />
-                    </h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>Configure the private self-service area for your clients.</p>
-                </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button className="btn-outline">
-                        <Eye size={18} /> Preview Portal
-                    </button>
-                    <button className="btn-primary">
-                        <Share size={18} /> Share Invite Link
-                    </button>
-                </div>
+const today = new Date().toISOString().slice(0,10);
+const d = (n) => { const x = new Date(); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
+
+const CHECKINS = [
+  { id:'BK-1001', guest:'Alice Johnson',  phone:'+1 245-888-0001', room:'Suite 301',   checkIn:today, checkOut:d(4), status:'Pending',   paid:true  },
+  { id:'BK-1002', guest:'Bob Smith',      phone:'+1 202-555-0158', room:'Deluxe 205',  checkIn:today, checkOut:d(3), status:'Pending',   paid:true  },
+  { id:'BK-1003', guest:'Charlie Brown',  phone:'+1 515-321-7788', room:'Penthouse 401',checkIn:today,checkOut:d(5), status:'Pending',   paid:false },
+  { id:'BK-1004', guest:'Diana Prince',   phone:'+1 415-982-3344', room:'Standard 102',checkIn:today, checkOut:d(2), status:'Checked-in',paid:true  },
+];
+
+const CHECKOUTS = [
+  { id:'BK-0991', guest:'Ethan Hunt',     phone:'+1 650-111-9988', room:'Deluxe 208',  checkIn:d(-3), checkOut:today, status:'Pending',    bill:447  },
+  { id:'BK-0992', guest:'Fiona Green',    phone:'+1 312-444-5566', room:'Standard 104',checkIn:d(-2), checkOut:today, status:'Pending',    bill:356  },
+  { id:'BK-0993', guest:'George Clooney', phone:'+1 777-321-0000', room:'Suite 302',   checkIn:d(-4), checkOut:today, status:'Checked-out',bill:996  },
+];
+
+export default function Portal() {
+  const [checkins, setCheckins]   = useState(CHECKINS);
+  const [checkouts, setCheckouts] = useState(CHECKOUTS);
+  const [search, setSearch]       = useState('');
+  const [tab, setTab]             = useState('checkin');
+  const [toast, setToast]         = useState(null);
+
+  const showToast = (msg, type='success') => { setToast({msg,type}); setTimeout(()=>setToast(null),3000); };
+
+  const doCheckin  = (id) => { setCheckins(c=>c.map(x=>x.id===id?{...x,status:'Checked-in'}:x)); showToast('Guest checked in successfully'); };
+  const doCheckout = (id) => { setCheckouts(c=>c.map(x=>x.id===id?{...x,status:'Checked-out'}:x)); showToast('Guest checked out — bill generated'); };
+
+  const card = { background:'var(--card-bg)', borderRadius:10, border:'1px solid var(--card-border)', boxShadow:'var(--card-shadow)' };
+
+  const filterList = (list) => list.filter(x => !search || x.guest.toLowerCase().includes(search.toLowerCase()) || x.id.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{ background:'var(--bg-page)', minHeight:'100%' }}>
+      <div style={{ marginBottom:20 }}>
+        <h1 style={{ fontSize:22, fontWeight:800, color:'var(--text-primary)', margin:0 }}>Check-in / Check-out</h1>
+        <p style={{ fontSize:13, color:'var(--text-secondary)', margin:'4px 0 0' }}>Manage today's guest arrivals and departures</p>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:20 }}>
+        {[
+          { label:"Today's Check-ins",  value: checkins.length,                                    color:'#10b981', icon: LogIn  },
+          { label:'Already Checked In', value: checkins.filter(x=>x.status==='Checked-in').length, color:'#2563eb', icon: Check  },
+          { label:"Today's Check-outs", value: checkouts.length,                                   color:'#f59e0b', icon: LogOut },
+          { label:'Pending Checkout',   value: checkouts.filter(x=>x.status==='Pending').length,   color:'#dc2626', icon: User   },
+        ].map((s,i) => {
+          const Icon = s.icon;
+          return (
+            <div key={i} style={{ ...card, padding:'16px 18px', position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.color, borderRadius:'10px 10px 0 0' }}/>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                <span style={{ fontSize:11, fontWeight:600, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.label}</span>
+                <div style={{ width:32, height:32, borderRadius:8, background:`${s.color}15`, display:'grid', placeItems:'center' }}><Icon size={15} color={s.color}/></div>
+              </div>
+              <div style={{ fontSize:26, fontWeight:800, color:s.color }}>{s.value}</div>
             </div>
+          );
+        })}
+      </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
-                <div>
-                    <div className="glass-card" style={{ padding: '32px', marginBottom: '32px' }}>
-                        <h4 style={{ fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <Settings size={20} color="var(--primary)" /> Portal Customization
-                        </h4>
-                        
-                        <div style={{ display: 'grid', gap: '24px' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Portal Name</label>
-                                <input type="text" defaultValue="Spark Solutions Client Space" className="glass-card" style={{ width: '100%', padding: '12px 16px', background: 'rgba(0, 0, 0,0.05)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)', outline: 'none' }} />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Primary Color</label>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    {['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#3b82f6'].map((color, i) => (
-                                        <div key={i} style={{ width: '40px', height: '40px', borderRadius: '50%', background: color, cursor: 'pointer', border: i === 0 ? '3px solid white' : 'none' }} />
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-secondary)' }}>Brand Logo</label>
-                                <div style={{ border: '2px dashed var(--glass-border)', padding: '40px', textAlign: 'center', borderRadius: '12px', cursor: 'pointer' }}>
-                                    <p style={{ color: 'var(--text-secondary)' }}>Drag and drop logo here or click to browse</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      {/* Tabs + Search */}
+      <div style={{ ...card, padding:'0 20px', marginBottom:16, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <div style={{ display:'flex' }}>
+          {[['checkin','Check-ins'],['checkout','Check-outs']].map(([k,l]) => (
+            <button key={k} onClick={()=>setTab(k)} style={{ padding:'13px 18px', border:'none', background:'transparent', cursor:'pointer', fontSize:13, fontWeight:tab===k?700:500, color:tab===k?'#2563eb':'var(--text-secondary)', borderBottom:tab===k?'2px solid #2563eb':'2px solid transparent', transition:'all 0.15s' }}>{l}</button>
+          ))}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, background:'var(--input-bg)', border:'1px solid var(--input-border)', borderRadius:6, padding:'6px 10px' }}>
+          <Search size={13} color='var(--text-muted)'/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search guest or booking ID..." style={{ background:'transparent', border:'none', color:'var(--text-primary)', outline:'none', fontSize:13, width:200 }}/>
+        </div>
+      </div>
 
-                    <div className="glass-card" style={{ padding: '32px' }}>
-                         <h4 style={{ fontSize: '18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <Lock size={20} color="var(--accent)" /> Access Permissions
-                        </h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                            {[
-                                { title: 'View Invoices', desc: 'Allow clients to view and download their invoices.' },
-                                { title: 'Submit Support Tickets', desc: 'Clients can raise issues directly from the portal.' },
-                                { title: 'Upload Documents', desc: 'Permit secure file sharing between you and clients.' },
-                                { title: 'View Project Pipeline', desc: 'Show them current status of their projects.' }
-                            ].map((item, i) => (
-                                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(0, 0, 0,0.02)', borderRadius: '12px' }}>
-                                    <div>
-                                        <p style={{ fontWeight: '600', marginBottom: '4px' }}>{item.title}</p>
-                                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{item.desc}</p>
-                                    </div>
-                                    <div style={{ width: '48px', height: '28px', background: 'var(--primary)', borderRadius: '20px', position: 'relative', cursor: 'pointer' }}>
-                                        <div style={{ width: '20px', height: '20px', background: 'white', borderRadius: '50%', position: 'absolute', right: '4px', top: '4px' }} />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+      {/* Table */}
+      <div style={{ ...card, overflow:'hidden' }}>
+        <table style={{ width:'100%', borderCollapse:'collapse' }}>
+          <thead>
+            <tr style={{ background:'var(--input-bg)', borderBottom:'1px solid var(--card-border)' }}>
+              {(tab==='checkin'
+                ? ['Booking ID','Guest Name','Phone','Room','Check-in','Check-out','Payment','Status','Action']
+                : ['Booking ID','Guest Name','Phone','Room','Check-in','Check-out','Bill','Status','Action']
+              ).map(h => <th key={h} style={{ padding:'11px 14px', textAlign:'left', fontSize:10, fontWeight:700, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.06em', whiteSpace:'nowrap' }}>{h}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {(tab==='checkin' ? filterList(checkins) : filterList(checkouts)).map((row,i) => (
+              <motion.tr key={row.id} initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:i*0.04 }}
+                style={{ borderBottom:'1px solid var(--card-border)' }}
+                onMouseEnter={e=>e.currentTarget.style.background='rgba(37,99,235,0.02)'}
+                onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{ padding:'12px 14px', fontSize:12, fontWeight:700, color:'#2563eb' }}>{row.id}</td>
+                <td style={{ padding:'12px 14px', fontSize:13, fontWeight:700, color:'var(--text-primary)' }}>{row.guest}</td>
+                <td style={{ padding:'12px 14px', fontSize:12, color:'var(--text-secondary)' }}>{row.phone}</td>
+                <td style={{ padding:'12px 14px', fontSize:12, fontWeight:600, color:'var(--text-primary)' }}>{row.room}</td>
+                <td style={{ padding:'12px 14px', fontSize:12, color:'var(--text-secondary)' }}>{row.checkIn}</td>
+                <td style={{ padding:'12px 14px', fontSize:12, color:'var(--text-secondary)' }}>{row.checkOut}</td>
+                <td style={{ padding:'12px 14px' }}>
+                  {tab==='checkin'
+                    ? <span style={{ padding:'3px 10px', borderRadius:12, fontSize:11, fontWeight:700, background:row.paid?'#d1fae5':'#fee2e2', color:row.paid?'#059669':'#dc2626' }}>{row.paid?'Paid':'Pending'}</span>
+                    : <span style={{ fontSize:14, fontWeight:800, color:'#2563eb' }}>${row.bill}</span>
+                  }
+                </td>
+                <td style={{ padding:'12px 14px' }}>
+                  <span style={{ padding:'3px 10px', borderRadius:12, fontSize:11, fontWeight:700,
+                    background: row.status==='Checked-in'||row.status==='Checked-out' ? '#d1fae5' : '#dbeafe',
+                    color: row.status==='Checked-in'||row.status==='Checked-out' ? '#059669' : '#2563eb' }}>
+                    {row.status}
+                  </span>
+                </td>
+                <td style={{ padding:'12px 14px' }}>
+                  {tab==='checkin' && row.status==='Pending' && (
+                    <button onClick={()=>doCheckin(row.id)} className="b24-btn b24-btn-primary" style={{ fontSize:12, padding:'6px 14px' }}>
+                      <LogIn size={13}/> Check In
+                    </button>
+                  )}
+                  {tab==='checkout' && row.status==='Pending' && (
+                    <button onClick={()=>doCheckout(row.id)} className="b24-btn b24-btn-secondary" style={{ fontSize:12, padding:'6px 14px' }}>
+                      <LogOut size={13}/> Check Out
+                    </button>
+                  )}
+                  {(row.status==='Checked-in'||row.status==='Checked-out') && (
+                    <span style={{ fontSize:12, color:'#059669', fontWeight:600, display:'flex', alignItems:'center', gap:4 }}><Check size={13}/> Done</span>
+                  )}
+                </td>
+              </motion.tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-                <div>
-                    <div className="glass-card mockup-preview" style={{ padding: '24px', position: 'sticky', top: '24px', border: '1px solid var(--primary)', background: 'linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(0, 0, 0,0.02) 100%)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>Live Preview</span>
-                            <ExternalLink size={16} color="var(--primary)" />
-                        </div>
-                        <div style={{ background: 'var(--card-bg)', borderRadius: '16px', overflow: 'hidden', height: '400px', border: '1px solid var(--glass-border)' }}>
-                            {/* Fake Portal Header */}
-                            <div style={{ padding: '16px', background: 'rgba(0, 0, 0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ width: '100px', height: '16px', background: 'var(--primary)', borderRadius: '4px' }} />
-                                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(0, 0, 0,0.1)' }} />
-                            </div>
-                            {/* Fake Content */}
-                            <div style={{ padding: '20px' }}>
-                                <div style={{ width: '60%', height: '24px', background: 'rgba(0, 0, 0,0.1)', borderRadius: '4px', marginBottom: '24px' }} />
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-                                    <div style={{ height: '80px', background: 'rgba(0, 0, 0,0.05)', borderRadius: '12px' }} />
-                                    <div style={{ height: '80px', background: 'rgba(0, 0, 0,0.05)', borderRadius: '12px' }} />
-                                </div>
-                                <div style={{ height: '120px', background: 'rgba(0, 0, 0,0.05)', borderRadius: '12px' }} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      {toast && (
+        <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
+          style={{ position:'fixed', bottom:24, right:24, zIndex:9999, padding:'11px 18px', borderRadius:6, background:'#059669', color:'#fff', fontWeight:600, fontSize:13, display:'flex', alignItems:'center', gap:8, boxShadow:'0 4px 16px rgba(0,0,0,0.2)' }}>
+          <Check size={14}/> {toast.msg}
         </motion.div>
-    );
-};
-
-export default Portal;
+      )}
+    </div>
+  );
+}
