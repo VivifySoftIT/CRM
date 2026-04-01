@@ -1,246 +1,189 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '../context/ThemeContext';
-import {
-  LayoutDashboard, Users, UserPlus, Building2, Briefcase,
-  CheckSquare, CalendarDays, Phone, LifeBuoy, Calendar,
-  BarChart3, User, LogOut, ShieldCheck, ChevronDown, ChevronLeft, Search, Sun, Moon, Bell
-} from 'lucide-react';
+import { LayoutDashboard, UserPlus, Users, Building2, Briefcase, CheckSquare, CalendarDays, Phone, LifeBuoy, FileText, MessageSquare, LogOut, Bell, ChevronDown, Search, Menu, X, User, Sun, Moon } from 'lucide-react';
+import { useStaffTheme } from '../context/useStaffTheme';
 
-const NAV_GROUPS = [
-  {
-    section: 'MAIN', icon: LayoutDashboard,
-    items: [{ icon: LayoutDashboard, label: 'Dashboard', path: '/staff/dashboard' }]
-  },
-  {
-    section: 'SALES & CRM', icon: Users,
-    items: [
-      { icon: UserPlus,  label: 'Leads',    path: '/staff/leads'    },
-      { icon: Users,     label: 'Contacts', path: '/staff/contacts' },
-      { icon: Building2, label: 'Accounts', path: '/staff/accounts' },
-      { icon: Briefcase, label: 'Deals',    path: '/staff/deals'    },
-    ]
-  },
-  {
-    section: 'ACTIVITIES', icon: CheckSquare,
-    items: [
-      { icon: CheckSquare,   label: 'Tasks',    path: '/staff/tasks'    },
-      { icon: CalendarDays,  label: 'Meetings', path: '/staff/meetings' },
-      { icon: Phone,         label: 'Calls',    path: '/staff/calls'    },
-    ]
-  },
-  {
-    section: 'SUPPORT', icon: LifeBuoy,
-    items: [
-      { icon: LifeBuoy, label: 'Support Tickets', path: '/staff/cases' },
-    ]
-  },
-  {
-    section: 'TOOLS & REPORTS', icon: Calendar,
-    items: [
-      { icon: Calendar,  label: 'Calendar', path: '/staff/calendar' },
-      { icon: BarChart3, label: 'Reports',  path: '/staff/reports'  },
-    ]
-  },
-  {
-    section: 'PERSONAL', icon: User,
-    items: [
-      { icon: User, label: 'Profile Settings', path: '/staff/settings' },
-    ]
-  },
+const NAV = [
+  { section:'MAIN', items:[{ icon:LayoutDashboard, label:'Dashboard', path:'/staff/dashboard' }]},
+  { section:'SALES & CRM', items:[
+    { icon:UserPlus, label:'Leads', path:'/staff/leads' },
+    { icon:Users, label:'Contacts', path:'/staff/contacts' },
+    { icon:Building2, label:'Organizations', path:'/staff/accounts' },
+    { icon:Briefcase, label:'Deals', path:'/staff/deals' },
+  ]},
+  { section:'ACTIVITIES', items:[
+    { icon:CheckSquare, label:'Tasks', path:'/staff/tasks' },
+    { icon:CalendarDays, label:'Meetings', path:'/staff/meetings' },
+    { icon:Phone, label:'Calls', path:'/staff/calls' },
+  ]},
+  { section:'SUPPORT', items:[{ icon:LifeBuoy, label:'My Tickets', path:'/staff/cases' }]},
+  { section:'TOOLS', items:[
+    { icon:FileText, label:'Documents', path:'/staff/documents' },
+    { icon:MessageSquare, label:'Messages', path:'/staff/messaging' },
+  ]},
 ];
 
+function Sidebar({ mobile, onClose, navigate, isActive }) {
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', width:'256px', background:'linear-gradient(180deg,#0f172a 0%,#020617 100%)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:'12px', padding:'20px', borderBottom:'1px solid rgba(255,255,255,0.08)', flexShrink:0 }}>
+        <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'linear-gradient(135deg,#3b82f6,#1d4ed8)', display:'grid', placeItems:'center', flexShrink:0 }}>
+          <LayoutDashboard size={18} color="white" />
+        </div>
+        <div style={{ flex:1 }}>
+          <div style={{ color:'white', fontWeight:900, fontSize:'15px' }}>VIVIFY<span style={{ color:'#60a5fa' }}>CRM</span></div>
+          <div style={{ color:'rgba(255,255,255,0.35)', fontSize:'10px', fontWeight:600 }}>Staff Portal</div>
+        </div>
+        {mobile && <button onClick={onClose} style={{ color:'rgba(255,255,255,0.4)', background:'none', border:'none', cursor:'pointer', padding:0 }}><X size={20} /></button>}
+      </div>
+      <nav style={{ flex:1, overflowY:'auto', padding:'16px 12px', scrollbarWidth:'none' }}>
+        {NAV.map(group => (
+          <div key={group.section} style={{ marginBottom:'20px' }}>
+            <p style={{ color:'rgba(255,255,255,0.22)', fontSize:'10px', fontWeight:900, letterSpacing:'0.1em', padding:'0 12px', marginBottom:'6px' }}>{group.section}</p>
+            {group.items.map(({ icon:Icon, label, path }) => {
+              const active = isActive(path);
+              return (
+                <button key={path} onClick={() => { navigate(path); if (mobile) onClose(); }}
+                  style={{ width:'100%', display:'flex', alignItems:'center', gap:'12px', padding:'10px 12px', borderRadius:'12px', border:'none', cursor:'pointer', marginBottom:'2px', fontSize:'14px', fontWeight:600, transition:'all 0.15s', background:active?'linear-gradient(135deg,#3b82f6,#2563eb)':'transparent', color:active?'white':'rgba(255,255,255,0.5)', boxShadow:active?'0 4px 14px rgba(59,130,246,0.35)':'none' }}
+                  onMouseEnter={e => { if (!active) { e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.color='white'; }}}
+                  onMouseLeave={e => { if (!active) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.5)'; }}}>
+                  <Icon size={17} />
+                  <span style={{ flex:1, textAlign:'left' }}>{label}</span>
+                  {active && <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:'rgba(255,255,255,0.7)' }} />}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+      <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', padding:'12px', flexShrink:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'12px', padding:'10px 12px', borderRadius:'12px' }}>
+          <div style={{ width:'32px', height:'32px', borderRadius:'8px', background:'linear-gradient(135deg,#10b981,#059669)', display:'grid', placeItems:'center', color:'white', fontWeight:900, fontSize:'11px', flexShrink:0 }}>ES</div>
+          <div>
+            <div style={{ color:'white', fontSize:'13px', fontWeight:700 }}>Emma Staff</div>
+            <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'11px' }}>Support and Sales</div>
+          </div>
+        </div>
+        <button onClick={() => navigate('/')}
+          style={{ width:'100%', display:'flex', alignItems:'center', gap:'12px', padding:'10px 12px', borderRadius:'12px', border:'none', cursor:'pointer', color:'#f87171', background:'transparent', fontSize:'14px', fontWeight:600 }}
+          onMouseEnter={e => e.currentTarget.style.background='rgba(248,113,113,0.1)'}
+          onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+          <LogOut size={16} /> Sign Out
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function StaffLayout() {
-  const [collapsed, setCollapsed] = useState(false);
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const { isDark, toggle } = useTheme();
-
-  const isActive = (path) =>
-    path === '/staff/dashboard'
-      ? location.pathname === '/staff/dashboard'
-      : location.pathname.startsWith(path);
-
-  const activeGroupSection = NAV_GROUPS.find(g => g.items.some(i => isActive(i.path)))?.section || 'MAIN';
-
-  const [openGroups, setOpenGroups] = useState(() => {
-    const init = {};
-    NAV_GROUPS.forEach(g => { init[g.section] = g.section === activeGroupSection || true; });
-    return init;
-  });
-
-  useEffect(() => {
-    setOpenGroups(prev => ({ ...prev, [activeGroupSection]: true }));
-  }, [activeGroupSection]);
-
-  const toggleGroup = (section) =>
-    setOpenGroups(prev => ({ ...prev, [section]: !prev[section] }));
-
-  const hdrBg  = isDark ? '#131d2b' : '#ffffff';
-  const hdrBdr = isDark ? 'rgba(255,255,255,0.07)' : '#e8edf3';
-  const hdrTxt = isDark ? '#f1f5f9' : '#1a2332';
-  const hdrSub = isDark ? '#4a5e72' : '#94a3b8';
-  const mainBg = isDark ? '#0b1320' : '#f0f4f8';
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t, isDark, toggle } = useStaffTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const isActive = p => p === '/staff/dashboard' ? location.pathname === '/staff/dashboard' : location.pathname.startsWith(p);
 
   return (
-    <div style={{ display:'flex', height:'100vh', background:mainBg, fontFamily:"'Plus Jakarta Sans',sans-serif", overflow:'hidden' }}>
-
-      {/* ── Sidebar ── */}
-      <motion.div
-        animate={{ width: collapsed ? 60 : 256 }}
-        transition={{ duration:0.2, ease:'easeInOut' }}
-        style={{ background:'#0f172a', display:'flex', flexDirection:'column', flexShrink:0, overflow:'hidden', zIndex:20, borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)'}` }}>
-
-        {/* Logo Section */}
-        <div style={{ height:64, display:'flex', alignItems:'center', padding:collapsed?'0 14px':'0 20px', gap:12, borderBottom:'1px solid rgba(255,255,255,0.07)', flexShrink:0 }}>
-          <div style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,#10b981,#059669)', display:'grid', placeItems:'center', flexShrink:0, boxShadow:'0 4px 12px rgba(16,185,129,0.3)' }}>
-            <ShieldCheck size={18} color='#fff'/>
+    <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:t.bg, fontFamily:"'Plus Jakarta Sans',sans-serif", transition:'background 0.2s' }}>
+      <aside style={{ flexShrink:0, boxShadow:'4px 0 24px rgba(0,0,0,0.2)', display:'flex', flexDirection:'column' }} className="staff-sidebar">
+        <Sidebar navigate={navigate} isActive={isActive} />
+      </aside>
+      {mobileOpen && (
+        <div style={{ position:'fixed', inset:0, zIndex:50, display:'flex' }}>
+          <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileOpen(false)} />
+          <div style={{ position:'relative', zIndex:10 }}>
+            <Sidebar mobile onClose={() => setMobileOpen(false)} navigate={navigate} isActive={isActive} />
           </div>
-          {!collapsed && (
-            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.05 }}>
-              <div style={{ fontSize:17, fontWeight:900, color:'#fff', letterSpacing:'-0.4px', whiteSpace:'nowrap' }}>
-                VIVIFY<span style={{ color:'#34d399' }}>CRM</span>
-              </div>
-              <div style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontWeight:600 }}>Staff Portal</div>
-            </motion.div>
-          )}
         </div>
-
-        {/* Navigation Core */}
-        <div style={{ flex:1, overflowY:'auto', overflowX:'hidden', padding:collapsed?'8px 6px':'10px 0 12px', scrollbarWidth:'none' }}>
-          {NAV_GROUPS.map((group) => {
-            const GroupIcon = group.icon;
-            const isOpen = openGroups[group.section];
-            const groupHasActive = group.items.some(i => isActive(i.path));
-
-            return (
-              <div key={group.section} style={{ marginBottom: 4 }}>
-                <button
-                  onClick={() => toggleGroup(group.section)}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center',
-                    gap: collapsed ? 0 : 10,
-                    padding: collapsed ? '11px 0' : '9px 20px',
-                    justifyContent: collapsed ? 'center' : 'flex-start',
-                    background: groupHasActive ? 'rgba(16,185,129,0.12)' : isOpen ? 'rgba(255,255,255,0.03)' : 'transparent',
-                    color: groupHasActive ? '#34d399' : isOpen ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)',
-                    border: 'none',
-                    borderLeft: !collapsed ? (groupHasActive ? '3px solid #10b981' : '3px solid transparent') : 'none',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    position: 'relative',
-                  }}
-                  onMouseEnter={e => { if (!groupHasActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; }}}
-                  onMouseLeave={e => { if (!groupHasActive) { e.currentTarget.style.background = isOpen ? 'rgba(255,255,255,0.03)' : 'transparent'; e.currentTarget.style.color = isOpen ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)'; }}}>
-
-                  <GroupIcon size={18} style={{ flexShrink: 0, opacity: groupHasActive ? 1 : 0.7 }} />
-
-                  {!collapsed && (
-                    <>
-                      <span style={{ flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em', textAlign: 'left', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                        {group.section}
-                      </span>
-                      <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                        <ChevronDown size={14} style={{ opacity: 0.5 }} />
-                      </motion.div>
-                    </>
-                  )}
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isOpen && !collapsed && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      style={{ overflow: 'hidden' }}>
-
-                      {group.items.map((item, idx) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.path);
-                        return (
-                          <button key={idx} onClick={() => navigate(item.path)}
-                            style={{
-                              width: '100%', display: 'flex', alignItems: 'center',
-                              gap: 12,
-                              padding: '8px 20px 8px 36px',
-                              background: active ? 'rgba(16,185,129,0.1)' : 'transparent',
-                              color: active ? '#6ee7b7' : 'rgba(255,255,255,0.5)',
-                              border: 'none',
-                              cursor: 'pointer', transition: 'all 0.1s',
-                            }}
-                            onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,0.9)'; }}}
-                            onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}}>
-
-                            <Icon size={16} />
-                            <span style={{ fontSize: 14.5, fontWeight: active ? 700 : 500 }}>
-                              {item.label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Sidebar Footer */}
-        <div style={{ borderTop:'1px solid rgba(255,255,255,0.07)', flexShrink:0, padding: 12 }}>
-          <button onClick={() => navigate('/')}
-            style={{ width:'100%', display:'flex', alignItems:'center', gap:collapsed?0:12, padding:collapsed?'12px 0':'10px 16px', justifyContent:collapsed?'center':'flex-start', border:'none', background:'rgba(248,113,113,0.05)', borderRadius: 10, color:'#f87171', cursor:'pointer', fontSize:14, fontWeight:700, transition:'all 0.15s' }}
-            onMouseEnter={e=>e.currentTarget.style.background='rgba(248,113,113,0.15)'}
-            onMouseLeave={e=>e.currentTarget.style.background='rgba(248,113,113,0.05)'}>
-            <LogOut size={18}/>{!collapsed&&'Sign Out'}
-          </button>
-        </div>
-      </motion.div>
-
-      {/* ── Main Content Area ── */}
+      )}
       <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', minWidth:0 }}>
-
-        {/* Global Toolbar */}
-        <div style={{ height:64, padding:'0 28px', display:'flex', justifyContent:'space-between', alignItems:'center', background:hdrBg, borderBottom:`1px solid ${hdrBdr}`, flexShrink:0, boxShadow:isDark?'none':'0 1px 10px rgba(0,0,0,0.03)' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-            <button onClick={()=>setCollapsed(c=>!c)}
-              style={{ width:36, height:36, borderRadius:10, border:`1px solid ${hdrBdr}`, background:'transparent', display:'grid', placeItems:'center', cursor:'pointer', color:hdrSub, transition: 'all 0.2s' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,0.02)'}>
-              <motion.div animate={{ rotate:collapsed?180:0 }} transition={{ duration:0.2 }}><ChevronLeft size={18}/></motion.div>
-            </button>
-            <div style={{ display:'flex', alignItems:'center', gap:12, background:isDark?'rgba(255,255,255,0.04)':'#f1f5f9', border:`1px solid ${hdrBdr}`, padding:'8px 16px', borderRadius:11, minWidth:320 }}>
-              <Search size={16} color={hdrSub}/>
-              <input placeholder="Search Leads, Contacts, Deals..." style={{ background:'transparent', border:'none', color:hdrTxt, outline:'none', fontSize:14, width:'100%' }}/>
+        <header style={{ height:'64px', background:t.navbarBg, borderBottom:'1px solid '+t.navbarBorder, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px', flexShrink:0, zIndex:10, transition:'background 0.2s' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+            <button onClick={() => setMobileOpen(true)} className="staff-menu-btn" style={{ padding:'8px', borderRadius:'8px', border:'none', background:'transparent', cursor:'pointer', color:t.textMuted, display:'none' }}><Menu size={20} /></button>
+            <div style={{ display:'flex', alignItems:'center', gap:'8px', background:t.input, border:'1px solid '+t.inputBorder, borderRadius:'12px', padding:'8px 14px', width:'220px' }}>
+              <Search size={15} color={t.textMuted} />
+              <input placeholder="Search..." style={{ background:'transparent', border:'none', outline:'none', fontSize:'14px', color:t.text, width:'100%' }} />
             </div>
           </div>
-
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <button onClick={toggle} style={{ width:40, height:40, borderRadius:11, border:`1px solid ${hdrBdr}`, background:'transparent', display:'grid', placeItems:'center', cursor:'pointer', color:hdrSub }} title="Toggle Theme">
-              {isDark?<Sun size={18}/>:<Moon size={18}/>}
+          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+            <button onClick={toggle} title={isDark?'Light mode':'Dark mode'}
+              style={{ width:'40px', height:'40px', borderRadius:'12px', border:'1px solid '+t.navbarBorder, background:t.input, display:'grid', placeItems:'center', cursor:'pointer', transition:'all 0.2s' }}>
+              {isDark ? <Sun size={18} color="#f59e0b" /> : <Moon size={18} color="#6366f1" />}
             </button>
-            <div style={{ position:'relative', width:40, height:40, borderRadius:11, border:`1px solid ${hdrBdr}`, display:'grid', placeItems:'center', cursor:'pointer', color:hdrSub }} title="Notifications">
-              <Bell size={18}/>
-              <div style={{ position:'absolute', top:10, right:10, width:7, height:7, background:'#10b981', borderRadius:'50%', border:`2px solid ${hdrBg}` }}/>
+            <div style={{ position:'relative' }}>
+              <button onClick={() => { setNotifOpen(o => !o); setProfileOpen(false); }}
+                style={{ position:'relative', width:'40px', height:'40px', borderRadius:'12px', border:'1px solid '+t.navbarBorder, background:t.input, display:'grid', placeItems:'center', cursor:'pointer', color:t.textSecondary }}>
+                <Bell size={18} />
+                <span style={{ position:'absolute', top:'9px', right:'9px', width:'8px', height:'8px', background:'#3b82f6', borderRadius:'50%', border:'2px solid '+t.navbarBg }} />
+              </button>
+              {notifOpen && (
+                <div style={{ position:'absolute', right:0, top:'52px', width:'300px', background:t.card, borderRadius:'16px', boxShadow:'0 8px 40px rgba(0,0,0,0.2)', border:'1px solid '+t.cardBorder, zIndex:50, overflow:'hidden' }}>
+                  <div style={{ padding:'12px 16px', borderBottom:'1px solid '+t.divider, display:'flex', justifyContent:'space-between' }}>
+                    <span style={{ fontWeight:700, fontSize:'14px', color:t.text }}>Notifications</span>
+                    <span style={{ fontSize:'12px', color:'#3b82f6', cursor:'pointer' }}>Mark all read</span>
+                  </div>
+                  {[
+                    { title:'New ticket assigned', sub:'TKT-1042 from Acme Corp', time:'2m ago', dot:'#3b82f6' },
+                    { title:'Task overdue', sub:'Follow up with David', time:'1h ago', dot:'#ef4444' },
+                    { title:'Deal updated', sub:'Vertex Corp - Proposal', time:'3h ago', dot:'#10b981' },
+                  ].map((n, i) => (
+                    <div key={i} style={{ display:'flex', gap:'12px', padding:'12px 16px', cursor:'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.background=t.hover}
+                      onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                      <span style={{ marginTop:'6px', width:'8px', height:'8px', borderRadius:'50%', background:n.dot, flexShrink:0 }} />
+                      <div>
+                        <p style={{ fontSize:'13px', fontWeight:600, color:t.text, margin:0 }}>{n.title}</p>
+                        <p style={{ fontSize:'12px', color:t.textSecondary, margin:'2px 0 0' }}>{n.sub}</p>
+                        <p style={{ fontSize:'11px', color:t.textMuted, margin:'2px 0 0' }}>{n.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div style={{ width:1, height:24, background:hdrBdr, margin: '0 4px' }}/>
-            <div style={{ display:'flex', alignItems:'center', gap:10, padding:'6px 14px', borderRadius:12, border:`1px solid ${hdrBdr}`, cursor:'pointer', transition: 'all 0.15s' }}
-              onMouseEnter={e=>e.currentTarget.style.background=isDark?'rgba(255,255,255,0.04)':'#f8fafc'}>
-              <div style={{ width:32, height:32, borderRadius:10, background:'linear-gradient(135deg,#10b981,#059669)', display:'grid', placeItems:'center', color:'#fff', fontWeight:900, fontSize:12 }}>ES</div>
-              <div style={{ display: collapsed ? 'none' : 'block' }}>
-                <div style={{ fontSize:13, fontWeight:800, color:hdrTxt, lineHeight:1.2 }}>Emma Staff</div>
-                <div style={{ fontSize:11, color:hdrSub, fontWeight: 500 }}>Support & Sales</div>
-              </div>
+            <div style={{ position:'relative' }}>
+              <button onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }}
+                style={{ display:'flex', alignItems:'center', gap:'10px', padding:'4px 12px 4px 4px', borderRadius:'12px', border:'1px solid '+t.navbarBorder, background:t.input, cursor:'pointer' }}>
+                <div style={{ width:'32px', height:'32px', borderRadius:'8px', background:'linear-gradient(135deg,#10b981,#059669)', display:'grid', placeItems:'center', color:'white', fontWeight:900, fontSize:'11px' }}>ES</div>
+                <div style={{ textAlign:'left' }}>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:t.text, lineHeight:1 }}>Emma Staff</div>
+                  <div style={{ fontSize:'11px', color:t.textMuted, marginTop:'2px' }}>Support and Sales</div>
+                </div>
+                <ChevronDown size={14} color={t.textMuted} />
+              </button>
+              {profileOpen && (
+                <div style={{ position:'absolute', right:0, top:'52px', width:'200px', background:t.card, borderRadius:'16px', boxShadow:'0 8px 40px rgba(0,0,0,0.2)', border:'1px solid '+t.cardBorder, zIndex:50, overflow:'hidden' }}>
+                  <div style={{ padding:'12px 16px', borderBottom:'1px solid '+t.divider }}>
+                    <p style={{ fontWeight:700, fontSize:'13px', color:t.text, margin:0 }}>Emma Staff</p>
+                    <p style={{ fontSize:'12px', color:t.textMuted, margin:'2px 0 0' }}>emma@vivifycrm.com</p>
+                  </div>
+                  <div style={{ padding:'4px 0' }}>
+                    <button style={{ width:'100%', display:'flex', alignItems:'center', gap:'10px', padding:'10px 16px', border:'none', background:'transparent', fontSize:'13px', color:t.textSecondary, cursor:'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.background=t.hover}
+                      onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                      <User size={14} /> Profile Settings
+                    </button>
+                    <button onClick={() => navigate('/')}
+                      style={{ width:'100%', display:'flex', alignItems:'center', gap:'10px', padding:'10px 16px', border:'none', background:'transparent', fontSize:'13px', color:'#ef4444', cursor:'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.background=isDark?'rgba(239,68,68,0.1)':'#fef2f2'}
+                      onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                      <LogOut size={14} /> Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-
-        {/* Dynamic Route Content */}
-        <div style={{ flex:1, overflowY:'auto', background: isDark ? '#0b1320' : '#f8fafc' }}>
-          <Outlet/>
-        </div>
+        </header>
+        {(notifOpen || profileOpen) && (
+          <div style={{ position:'fixed', inset:0, zIndex:40 }} onClick={() => { setNotifOpen(false); setProfileOpen(false); }} />
+        )}
+        <main style={{ flex:1, overflowY:'auto', background:t.bg, transition:'background 0.2s' }}>
+          <Outlet />
+        </main>
       </div>
+      <style>{`.staff-sidebar{display:flex!important;flex-direction:column}.staff-menu-btn{display:none!important}@media(max-width:1023px){.staff-sidebar{display:none!important}.staff-menu-btn{display:grid!important;place-items:center}}`}</style>
     </div>
   );
 }

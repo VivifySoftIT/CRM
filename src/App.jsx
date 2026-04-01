@@ -7,6 +7,13 @@ import DashboardLayout from './components/DashboardLayout';
 import ClientLayout    from './components/ClientLayout';
 import SuperAdminLayout from './components/SuperAdminLayout';
 import StaffLayout     from './components/StaffLayout';
+// ── Staff Portal Pages ────────────────────────────────────────────────────────
+import StaffDashboard from './pages/staff/StaffDashboard';
+import StaffTickets   from './pages/staff/StaffTickets';
+import StaffTasks     from './pages/staff/StaffTasks';
+import StaffMessages  from './pages/staff/StaffMessages';
+import StaffDocuments from './pages/staff/StaffDocuments';
+import StaffClients   from './pages/staff/StaffClients';
 
 // ── Public Pages ─────────────────────────────────────────────────────────────
 import LandingPage  from './pages/LandingPage';
@@ -57,6 +64,8 @@ import Marketing    from './pages/modules/Marketing';
 import SitesAndForms from './pages/modules/SitesAndForms';
 import Support      from './pages/modules/Support';
 import Settings     from './pages/modules/Settings';
+import Forecasting  from './pages/modules/Forecasting';
+import Goals        from './pages/modules/Goals';
 import SuperAdmin   from './pages/modules/SuperAdmin';
 
 // ── Client Portal Pages ───────────────────────────────────────────────────────
@@ -125,6 +134,8 @@ export default function App() {
             <Route path="sites-forms"        element={<SitesAndForms />} />
             <Route path="support"            element={<Support />} />
             <Route path="settings"           element={<Settings />} />
+            <Route path="forecasting"        element={<Forecasting />} />
+            <Route path="goals"              element={<Goals />} />
           </Route>
 
           {/* ── Super Admin ── */}
@@ -137,10 +148,11 @@ export default function App() {
             <Route path="settings"  element={<SuperAdmin />} />
           </Route>
 
+
           {/* ── Staff Portal ── */}
           <Route path="/staff" element={<StaffLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard"    element={<Dashboard />} />
+            <Route path="dashboard" element={<StaffDashboard />} />
             <Route path="leads"        element={<Leads />} />
             <Route path="leads/:id"    element={<LeadDetails />} />
             <Route path="contacts"     element={<Contacts />} />
@@ -149,14 +161,14 @@ export default function App() {
             <Route path="accounts/:id" element={<AccountDetails />} />
             <Route path="deals"        element={<Deals />} />
             <Route path="deals/:id"    element={<DealDetails />} />
-            <Route path="tasks"        element={<Tasks />} />
+            <Route path="tasks"        element={<StaffTasks />} />
             <Route path="meetings"     element={<Meetings />} />
             <Route path="calls"        element={<Calls />} />
-            <Route path="cases"        element={<Cases />} />
+            <Route path="cases"        element={<StaffTickets />} />
             <Route path="cases/:id"    element={<CaseDetails />} />
-            <Route path="calendar"     element={<Meetings />} />
-            <Route path="reports"      element={<Reports />} />
-            <Route path="settings"     element={<ProfilePage />} />
+            <Route path="documents"    element={<StaffDocuments />} />
+            <Route path="messaging"    element={<StaffMessages />} />
+            <Route path="clients"      element={<StaffClients />} />
           </Route>
 
           {/* ── Client Portal ── */}
