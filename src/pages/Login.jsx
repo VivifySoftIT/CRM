@@ -24,13 +24,7 @@ const Login = () => {
     setTimeout(() => {
       // Sign Up Flow
       if (isSignUp) {
-        // Store basic info to prefill onboarding
-        localStorage.setItem('onboardingName', name);
-        localStorage.setItem('onboardingEmail', email);
-        localStorage.setItem('onboardingPhone', phone);
-        
-        // Redirect to onboarding page for new customers
-        navigate('/onboarding');
+        navigate('/signup');
       } 
       // Sign In Flow (Existing Mock Logic)
       else {
@@ -142,7 +136,7 @@ const Login = () => {
               style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: !isSignUp ? 'rgba(255,255,255,0.1)' : 'transparent', color: !isSignUp ? '#fff' : '#64748b', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: !isSignUp ? '0 4px 12px rgba(0,0,0,0.1)' : 'none' }}>
               Sign In
             </button>
-            <button onClick={() => setIsSignUp(true)}
+            <button onClick={() => navigate('/signup')}
               style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: isSignUp ? 'rgba(255,255,255,0.1)' : 'transparent', color: isSignUp ? '#fff' : '#64748b', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: isSignUp ? '0 4px 12px rgba(0,0,0,0.1)' : 'none' }}>
               Create Account
             </button>
