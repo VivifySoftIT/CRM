@@ -67,7 +67,11 @@ import Support      from './pages/modules/Support';
 import Settings     from './pages/modules/Settings';
 import Forecasting  from './pages/modules/Forecasting';
 import Goals        from './pages/modules/Goals';
-import SuperAdmin   from './pages/modules/SuperAdmin';
+import SuperAdmin              from './pages/modules/SuperAdmin';
+import Organizations          from './pages/modules/Organizations';
+import SubscriptionPlansAdmin from './pages/modules/SubscriptionPlansAdmin';
+import AnalyticsAdmin         from './pages/modules/AnalyticsAdmin';
+import GlobalSettings         from './pages/modules/GlobalSettings';
 
 // ── Client Portal Pages ───────────────────────────────────────────────────────
 import ClientDashboard  from './pages/client/ClientDashboard';
@@ -143,11 +147,11 @@ export default function App() {
           {/* ── Super Admin ── */}
           <Route path="/super-admin" element={<SuperAdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<SuperAdmin />} />
-            <Route path="companies" element={<SuperAdmin />} />
-            <Route path="plans"     element={<SuperAdmin />} />
-            <Route path="analytics" element={<SuperAdmin />} />
-            <Route path="settings"  element={<SuperAdmin />} />
+            <Route path="dashboard"     element={<SuperAdmin />} />
+            <Route path="companies"   element={<Organizations />} />
+            <Route path="plans"       element={<SubscriptionPlansAdmin />} />
+            <Route path="analytics"   element={<AnalyticsAdmin />} />
+            <Route path="settings"    element={<GlobalSettings />} />
           </Route>
 
 
