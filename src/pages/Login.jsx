@@ -28,20 +28,17 @@ const Login = () => {
       } 
       // Sign In Flow (Existing Mock Logic)
       else {
-        if (email === 'admin@omnihotel.com') {
+        if (email === 'admin@vivifycrm.com') {
           localStorage.setItem('userType', 'super_admin');
           navigate('/super-admin/dashboard');
-        } else if (email === 'staff@grandomni.com') {
+        } else if (email === 'staff@vivifycrm.com') {
           localStorage.setItem('userType', 'staff');
           navigate('/staff/dashboard');
-        } else if (email === 'guest@grandomni.com') {
-          localStorage.setItem('userType', 'guest');
-          navigate('/guest/dashboard');
-        } else if (email === 'client@grandomni.com') {
+        } else if (email === 'client@vivifycrm.com') {
           localStorage.setItem('userType', 'client');
           navigate('/client/dashboard');
         } else {
-          localStorage.setItem('userType', 'hotel_staff');
+          localStorage.setItem('userType', 'tenant_admin');
           navigate('/dashboard');
         }
       }
@@ -49,10 +46,6 @@ const Login = () => {
     }, 1200);
   };
 
-  const quickFill = (e) => {
-    setIsSignUp(false);
-    setEmail(e);
-  };
 
   return (
     <div style={{
@@ -285,40 +278,6 @@ const Login = () => {
                 )}
               </motion.button>
             </form>
-
-            {/* Quick access buttons - only visible on Sign In */}
-            {!isSignUp && (
-              <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '24px 0 20px' }}>
-                  <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#334155', letterSpacing: '0.06em' }}>QUICK ACCESS</span>
-                  <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
-                  {[
-                    { label: 'Super Admin',   email: 'admin@omnihotel.com',   color: '#6366f1' },
-                    { label: 'Hotel Manager', email: 'manager@grandomni.com', color: '#8b5cf6' },
-                    { label: 'Staff',         email: 'staff@grandomni.com',   color: '#10b981' },
-                    { label: 'Guest',         email: 'guest@grandomni.com',   color: '#2563eb' },
-                    { label: 'Client',        email: 'client@grandomni.com',  color: '#f59e0b' },
-                  ].map(item => (
-                    <button key={item.label} type="button" onClick={() => quickFill(item.email)}
-                      style={{
-                        padding: '11px 14px', borderRadius: 11,
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        background: 'rgba(255,255,255,0.03)',
-                        color: '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                        transition: 'all 0.18s', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2
-                      }}
-                      onMouseOver={e => { e.currentTarget.style.borderColor = `${item.color}55`; e.currentTarget.style.color = 'white'; e.currentTarget.style.background = `${item.color}10`; }}
-                      onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}>
-                      <span style={{ fontSize: 11, color: item.color, fontWeight: 800, letterSpacing: '0.04em' }}>DEMO</span>
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
 
             {/* Footer */}
             <p style={{ textAlign: 'center', marginTop: 24, fontSize: 11, color: '#1e293b' }}>

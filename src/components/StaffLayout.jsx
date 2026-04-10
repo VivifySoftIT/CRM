@@ -64,7 +64,7 @@ function Sidebar({ mobile, onClose, navigate, isActive }) {
             <div style={{ color:'rgba(255,255,255,0.4)', fontSize:'11px' }}>Support and Sales</div>
           </div>
         </div>
-        <button onClick={() => navigate('/')}
+        <button onClick={() => navigate('/login')}
           style={{ width:'100%', display:'flex', alignItems:'center', gap:'12px', padding:'10px 12px', borderRadius:'12px', border:'none', cursor:'pointer', color:'#f87171', background:'transparent', fontSize:'14px', fontWeight:600 }}
           onMouseEnter={e => e.currentTarget.style.background='rgba(248,113,113,0.1)'}
           onMouseLeave={e => e.currentTarget.style.background='transparent'}>
@@ -153,7 +153,7 @@ export default function StaffLayout() {
                 <ChevronDown size={14} color={t.textMuted} />
               </button>
               {profileOpen && (
-                <div style={{ position:'absolute', right:0, top:'52px', width:'200px', background:t.card, borderRadius:'16px', boxShadow:'0 8px 40px rgba(0,0,0,0.2)', border:'1px solid '+t.cardBorder, zIndex:50, overflow:'hidden' }}>
+                <div style={{ position:'absolute', right:0, top:'52px', width:'200px', background:t.card, borderRadius:'16px', boxShadow:'0 8px 40px rgba(0,0,0,0.2)', border:'1px solid '+t.cardBorder, zIndex:200, overflow:'hidden' }}>
                   <div style={{ padding:'12px 16px', borderBottom:'1px solid '+t.divider }}>
                     <p style={{ fontWeight:700, fontSize:'13px', color:t.text, margin:0 }}>Emma Staff</p>
                     <p style={{ fontSize:'12px', color:t.textMuted, margin:'2px 0 0' }}>emma@vivifycrm.com</p>
@@ -164,7 +164,7 @@ export default function StaffLayout() {
                       onMouseLeave={e => e.currentTarget.style.background='transparent'}>
                       <User size={14} /> Profile Settings
                     </button>
-                    <button onClick={() => navigate('/')}
+                    <button onClick={(e) => { e.stopPropagation(); setProfileOpen(false); navigate('/login'); }}
                       style={{ width:'100%', display:'flex', alignItems:'center', gap:'10px', padding:'10px 16px', border:'none', background:'transparent', fontSize:'13px', color:'#ef4444', cursor:'pointer' }}
                       onMouseEnter={e => e.currentTarget.style.background=isDark?'rgba(239,68,68,0.1)':'#fef2f2'}
                       onMouseLeave={e => e.currentTarget.style.background='transparent'}>

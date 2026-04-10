@@ -55,7 +55,7 @@ const SuperAdminLayout = () => {
     { icon: <Settings size={18} />,        label: 'Global Settings',    path: '/super-admin/settings'  },
   ];
 
-  const handleLogout = () => { localStorage.removeItem('userType'); navigate('/'); };
+  const handleLogout = () => { localStorage.removeItem('userType'); navigate('/login'); };
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: t.mainBg, transition: 'background 0.3s' }}>

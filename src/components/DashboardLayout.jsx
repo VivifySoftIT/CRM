@@ -9,7 +9,8 @@ import {
   LogOut, ShieldCheck, ChevronDown, Search, Sun, Moon, Bell,
   LifeBuoy, BookOpen, Mail, Share2, Globe, MessageSquare,
   Plus, UserCircle, X, ChevronRight, PanelLeftClose,
-  PanelLeftOpen, Sparkles, Activity, Hash
+  PanelLeftOpen, Sparkles, Activity, Hash,
+  BellRing, ListTodo, StickyNote, Bot
 } from 'lucide-react';
 
 // ── Nav config ────────────────────────────────────────────────────────────────
@@ -23,18 +24,22 @@ const NAV_GROUPS = [
     items: [
       { icon: UserPlus,      label: 'Leads',          path: '/dashboard/leads'    },
       { icon: Users,         label: 'Contacts',       path: '/dashboard/contacts' },
-      { icon: Building2,     label: 'Organizations',       path: '/dashboard/accounts' },
+      { icon: Building2,     label: 'Organizations',  path: '/dashboard/accounts' },
       { icon: Briefcase,     label: 'Opportunities',  path: '/dashboard/deals'    },
       { icon: MessageSquare, label: 'Feedbacks',      path: '/dashboard/feedback' },
+      { icon: Users,         label: 'Staff',          path: '/dashboard/staff'    },
     ]
   },
   {
     section: 'ACTIVITIES', icon: CheckSquare,
     items: [
-      { icon: CheckSquare,  label: 'Tasks',    path: '/dashboard/tasks'    },
-      { icon: CalendarDays, label: 'Meetings', path: '/dashboard/meetings' },
-      { icon: Phone,        label: 'Calls',    path: '/dashboard/calls'    },
-      { icon: Mail,         label: 'Messages', path: '/dashboard/messaging'},
+      { icon: CheckSquare,  label: 'Tasks',     path: '/dashboard/tasks'     },
+      { icon: ListTodo,     label: 'To Do',     path: '/dashboard/todos'     },
+      { icon: BellRing,     label: 'Reminders', path: '/dashboard/reminders' },
+      { icon: CalendarDays, label: 'Meetings',  path: '/dashboard/meetings'  },
+      { icon: Phone,        label: 'Calls',     path: '/dashboard/calls'     },
+      { icon: MessageSquare,label: 'Chat',      path: '/dashboard/chat'      },
+      { icon: StickyNote,   label: 'Notes',     path: '/dashboard/notes'     },
     ]
   },
   {
@@ -74,10 +79,12 @@ const NAV_GROUPS = [
     ]
   },
   {
-    section: 'SYSTEM', icon: Settings,
+    section: 'SYSTEM / AI', icon: Settings,
     items: [
-      { icon: Zap,      label: 'Automation', path: '/dashboard/automation' },
-      { icon: Settings, label: 'Settings',   path: '/dashboard/settings'  },
+      { icon: Bot,      label: 'AI Chat Bot', path: '/dashboard/ai-bot'     },
+      { icon: Activity, label: 'Analytics',   path: '/dashboard/analytics'  },
+      { icon: Zap,      label: 'Automation',  path: '/dashboard/automation' },
+      { icon: Settings, label: 'Settings',    path: '/dashboard/settings'   },
     ]
   },
 ];
@@ -220,7 +227,7 @@ function UserMenuDropdown({ onClose, navigate, isDark }) {
         })}
       </div>
       <div style={{ padding:'6px 6px 8px', borderTop:`1px solid ${isDark?'rgba(255,255,255,0.06)':'#f1f5f9'}` }}>
-        <button onClick={() => { navigate('/'); onClose(); }}
+        <button onClick={(e) => { e.stopPropagation(); onClose(); navigate('/login'); }}
           style={{ width:'100%', display:'flex', alignItems:'center', gap:10, padding:'9px 12px', borderRadius:8, border:'none', background:'transparent', cursor:'pointer', fontSize:13, fontWeight:700, color:'#ef4444', textAlign:'left', transition:'background 0.15s' }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.06)'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
@@ -382,7 +389,7 @@ export default function DashboardLayout() {
         <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)', padding: collapsed?'10px 8px':'10px 12px', flexShrink:0 }}>
           {collapsed ? (
             <Tooltip label="Sign Out">
-              <button onClick={() => navigate('/')}
+              <button onClick={() => navigate('/login')}
                 style={{ width:'100%', height:38, display:'flex', alignItems:'center', justifyContent:'center', border:'none', background:'rgba(239,68,68,0.08)', borderRadius:9, cursor:'pointer', color:'#f87171', transition:'all 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.background='rgba(239,68,68,0.16)'}
                 onMouseLeave={e => e.currentTarget.style.background='rgba(239,68,68,0.08)'}>
@@ -390,7 +397,7 @@ export default function DashboardLayout() {
               </button>
             </Tooltip>
           ) : (
-            <button onClick={() => navigate('/')}
+            <button onClick={() => navigate('/login')}
               style={{ width:'100%', display:'flex', alignItems:'center', gap:10, padding:'9px 12px', border:'none', background:'rgba(239,68,68,0.06)', borderRadius:10, cursor:'pointer', color:'#f87171', fontSize:13, fontWeight:700, transition:'all 0.15s' }}
               onMouseEnter={e => e.currentTarget.style.background='rgba(239,68,68,0.14)'}
               onMouseLeave={e => e.currentTarget.style.background='rgba(239,68,68,0.06)'}>

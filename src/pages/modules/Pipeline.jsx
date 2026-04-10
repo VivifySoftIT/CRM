@@ -369,7 +369,7 @@ function CalendarView({ bookings }) {
             <div key={i} style={{ minHeight:80, padding:'6px', borderRight:'1px solid var(--card-border)', borderBottom:'1px solid var(--card-border)', background: isToday ? 'rgba(37,99,235,0.04)' : 'transparent' }}>
               {day && (
                 <>
-                  <div style={{ fontSize:12, fontWeight: isToday?800:500, color: isToday?'#2563eb':'var(--text-secondary)', width:22, height:22, borderRadius:'50%', background: isToday?'#2563eb':'transparent', display:'grid', placeItems:'center', marginBottom:4, color: isToday?'#fff':'var(--text-secondary)' }}>{day}</div>
+                  <div style={{ fontSize:12, fontWeight: isToday?800:500, width:22, height:22, borderRadius:'50%', background: isToday?'#2563eb':'transparent', display:'grid', placeItems:'center', marginBottom:4, color: isToday?'#fff':'var(--text-secondary)' }}>{day}</div>
                   {dayBookings.slice(0,2).map((b,j) => (
                     <div key={j} style={{ fontSize:9, fontWeight:600, padding:'1px 5px', borderRadius:3, marginBottom:2, background: BSTATUS_BG[b.status], color: BSTATUS[b.status], overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {b.guest.split(' ')[0]}

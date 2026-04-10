@@ -67,6 +67,11 @@ import Support      from './pages/modules/Support';
 import Settings     from './pages/modules/Settings';
 import Forecasting  from './pages/modules/Forecasting';
 import Goals        from './pages/modules/Goals';
+import Reminders    from './pages/modules/Reminders';
+import Todos        from './pages/modules/Todos';
+import Chat         from './pages/modules/Chat';
+import Notes        from './pages/modules/Notes';
+import AIBot        from './pages/modules/AIBot';
 import SuperAdmin              from './pages/modules/SuperAdmin';
 import Organizations          from './pages/modules/Organizations';
 import SubscriptionPlansAdmin from './pages/modules/SubscriptionPlansAdmin';
@@ -81,6 +86,7 @@ import ClientDocuments  from './pages/client/ClientDocuments';
 import ClientMessages   from './pages/client/ClientMessages';
 import ClientProfile    from './pages/client/ClientProfile';
 import ClientOnboarding from './pages/client/ClientOnboarding';
+import ClientHelpCenter from './pages/client/ClientHelpCenter';
 
 export default function App() {
   return (
@@ -89,7 +95,7 @@ export default function App() {
         <Routes>
 
           {/* ── Public ── */}
-          <Route path="/"            element={<Navigate to="/profile" replace />} />
+          <Route path="/"            element={<Navigate to="/login" replace />} />
           <Route path="/login"       element={<Login />} />
           <Route path="/signup"      element={<Signup />} />
           <Route path="/profile"     element={<ProfilePage />} />
@@ -142,6 +148,11 @@ export default function App() {
             <Route path="settings"           element={<Settings />} />
             <Route path="forecasting"        element={<Forecasting />} />
             <Route path="goals"              element={<Goals />} />
+            <Route path="reminders"          element={<Reminders />} />
+            <Route path="todos"              element={<Todos />} />
+            <Route path="chat"               element={<Chat />} />
+            <Route path="notes"              element={<Notes />} />
+            <Route path="ai-bot"             element={<AIBot />} />
           </Route>
 
           {/* ── Super Admin ── */}
@@ -187,10 +198,11 @@ export default function App() {
             <Route path="documents" element={<ClientDocuments />} />
             <Route path="messages"  element={<ClientMessages />} />
             <Route path="profile"   element={<ClientProfile />} />
+            <Route path="help"      element={<ClientHelpCenter />} />
           </Route>
 
           {/* ── Catch-all ── */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Routes>
       </BrowserRouter>

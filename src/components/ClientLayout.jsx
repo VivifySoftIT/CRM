@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, FileText, Ticket, CreditCard, Folder,
   MessageSquare, User, Bell, ChevronDown, LogOut, X,
-  Menu, Search, Check, Sun, Moon, ShieldCheck, ChevronLeft
+  Menu, Search, Check, Sun, Moon, ShieldCheck, ChevronLeft, HelpCircle
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -14,6 +14,7 @@ const NAV = [
   { icon: CreditCard,      label: 'Billing & Payments',       path: '/client/billing'    },
   { icon: Folder,          label: 'Documents',                path: '/client/documents'  },
   { icon: MessageSquare,   label: 'Messages / Communication', path: '/client/messages'   },
+  { icon: HelpCircle,      label: 'Help Center',              path: '/client/help'       },
   { icon: User,            label: 'Profile Settings',         path: '/client/profile'    },
 ];
 
@@ -99,7 +100,7 @@ export default function ClientLayout() {
 
         {/* Sidebar Footer */}
         <div style={{ borderTop:'1px solid rgba(255,255,255,0.07)', flexShrink:0, padding: 12 }}>
-          <button onClick={() => navigate('/')}
+          <button onClick={() => navigate('/login')}
             style={{ width:'100%', display:'flex', alignItems:'center', gap:collapsed?0:12, padding:collapsed?'12px 0':'10px 16px', justifyContent:collapsed?'center':'flex-start', border:'none', background:'rgba(248,113,113,0.05)', borderRadius: 10, color:'#f87171', cursor:'pointer', fontSize:14, fontWeight:700, transition:'all 0.15s' }}
             onMouseEnter={e=>e.currentTarget.style.background='rgba(248,113,113,0.15)'}
             onMouseLeave={e=>e.currentTarget.style.background='rgba(248,113,113,0.05)'}>
@@ -189,7 +190,7 @@ export default function ClientLayout() {
                       </button>
                     ))}
                     <div style={{ height:1, background:'var(--card-border)' }}/>
-                    <button onClick={() => navigate('/')} style={{ width:'100%', padding:'10px 16px', border:'none', background:'transparent', textAlign:'left', fontSize:13, color:'var(--danger)', cursor:'pointer', fontWeight:600 }}>Sign Out</button>
+                    <button onClick={(e) => { e.stopPropagation(); setProfileOpen(false); navigate('/login'); }} style={{ width:'100%', padding:'10px 16px', border:'none', background:'transparent', textAlign:'left', fontSize:13, color:'var(--danger)', cursor:'pointer', fontWeight:600 }}>Sign Out</button>
                   </motion.div>
                 )}
               </AnimatePresence>
