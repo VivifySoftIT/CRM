@@ -1,34 +1,64 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Sparkles, Eye, EyeOff, User, Phone } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Sparkles, Eye, EyeOff, User, Phone, AlertCircle } from 'lucide-react';
+import { authApi } from '../utils/api';
 
 const Login = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
-  
-  // Form state
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   
   const [showPass, setShowPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [focused, setFocused] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    setTimeout(() => {
-      // Sign Up Flow
-      if (isSignUp) {
-        navigate('/signup');
-      } 
-      // Sign In Flow (Existing Mock Logic)
-      else {
-        if (email === 'admin@vivifycrm.com') {
+    try {
+      // 1. Try Real API Authentication
+      const response = await authApi.login({ email, password });
+      
+      if (response && response.success) {
+        localStorage.setItem('token', response.token);
+        
+        // Handle Role-based Navigation from API response
+        const role = response.user.role;
+        if (role === 'SuperAdmin') {
+          localStorage.setItem('userType', 'super_admin');
+          navigate('/super-admin/dashboard');
+        } else if (role === 'Admin') {
+          localStorage.setItem('userType', 'tenant_admin');
+          navigate('/dashboard');
+        } else if (role === 'Staff') {
+          localStorage.setItem('userType', 'staff');
+          navigate('/staff/dashboard');
+        } else if (role === 'Client') {
+          localStorage.setItem('userType', 'client');
+          navigate('/client/dashboard');
+        }
+        return;
+      }
+    } catch (err) {
+      if (err.isBackendError) {
+        setError(err.message);
+        setIsLoading(false);
+        return;
+      }
+
+      console.warn('Backend API connection failed, checking demo credentials...', err.message);
+      
+      // 2. Fallback to Demo/Mock Logic if API is not yet published or unreachable
+      setTimeout(() => {
+        if (email === 'Superadmin@gmail.com' && password === 'Admin@123') {
+          localStorage.setItem('userType', 'super_admin');
+          localStorage.setItem('token', 'mock_jwt_token');
+          navigate('/super-admin/dashboard');
+        } else if (email === 'admin@vivifycrm.com') {
           localStorage.setItem('userType', 'super_admin');
           navigate('/super-admin/dashboard');
         } else if (email === 'staff@vivifycrm.com') {
@@ -38,12 +68,14 @@ const Login = () => {
           localStorage.setItem('userType', 'client');
           navigate('/client/dashboard');
         } else {
-          localStorage.setItem('userType', 'tenant_admin');
-          navigate('/dashboard');
+          setError('Invalid credentials. Please check your email and password.');
         }
-      }
-      setIsLoading(false);
-    }, 1200);
+        setIsLoading(false);
+      }, 800);
+      return;
+    }
+    
+    setIsLoading(false);
   };
 
 
@@ -83,17 +115,11 @@ const Login = () => {
           <span style={{ color: '#94a3b8', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em' }}>PLATFORM v2.0 — ALL SYSTEMS OPERATIONAL</span>
         </motion.div>
 
-        {/* Headline */}
         <AnimatePresence mode="wait">
-          <motion.h1 key={isSignUp ? 'signup' : 'login'} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}
+          <motion.h1 key="login" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}
             style={{ color: 'white', fontSize: 52, fontWeight: 800, lineHeight: 1.08, letterSpacing: '-2.5px', marginBottom: 20 }}>
-            {isSignUp ? (
-              <>Join the<br />Ecosystem<br />
-              <span style={{ background: 'linear-gradient(135deg,#818cf8 0%,#c084fc 50%,#f472b6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Today.</span></>
-            ) : (
               <>The Future of<br />Enterprise is<br />
               <span style={{ background: 'linear-gradient(135deg,#818cf8 0%,#c084fc 50%,#f472b6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Unified.</span></>
-            )}
           </motion.h1>
         </AnimatePresence>
 
@@ -123,18 +149,6 @@ const Login = () => {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
           style={{ width: '100%' }}>
 
-          {/* Toggle Login/Signup */}
-          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 4, marginBottom: 24 }}>
-            <button onClick={() => setIsSignUp(false)}
-              style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: !isSignUp ? 'rgba(255,255,255,0.1)' : 'transparent', color: !isSignUp ? '#fff' : '#64748b', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: !isSignUp ? '0 4px 12px rgba(0,0,0,0.1)' : 'none' }}>
-              Sign In
-            </button>
-            <button onClick={() => navigate('/signup')}
-              style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: isSignUp ? 'rgba(255,255,255,0.1)' : 'transparent', color: isSignUp ? '#fff' : '#64748b', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', boxShadow: isSignUp ? '0 4px 12px rgba(0,0,0,0.1)' : 'none' }}>
-              Create Account
-            </button>
-          </div>
-
           {/* Card */}
           <div style={{
             background: 'rgba(255,255,255,0.035)',
@@ -148,36 +162,22 @@ const Login = () => {
             {/* Card header */}
             <div style={{ marginBottom: 32 }}>
               <h2 style={{ color: 'white', fontSize: 24, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 6 }}>
-                {isSignUp ? "Create your account." : "Welcome back."}
+                Welcome back.
               </h2>
               <p style={{ color: '#475569', fontSize: 14 }}>
-                {isSignUp ? "Enter your details to register as a client." : "Sign in to your control panel."}
+                Sign in to your control panel.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {error && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '12px 14px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <AlertCircle size={16} color="#ef4444" style={{ flexShrink: 0 }} />
+                <p style={{ color: '#fca5a5', fontSize: 13, fontWeight: 500, margin: 0 }}>{error}</p>
+              </motion.div>
+            )}
 
-              {/* Only show Name & Phone if Signup */}
-              <AnimatePresence>
-                {isSignUp && (
-                  <motion.div initial={{ opacity: 0, height: 0, marginBottom: 0 }} animate={{ opacity: 1, height: 'auto', marginBottom: 18 }} exit={{ opacity: 0, height: 0, marginBottom: 0 }} style={{ overflow: 'hidden' }}>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Full Name</label>
-                    <div style={{ position: 'relative' }}>
-                      <User size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: focused === 'name' ? '#818cf8' : '#334155', transition: 'color 0.2s', pointerEvents: 'none' }} />
-                      <input type="text" required={isSignUp} value={name} placeholder="John Doe"
-                        onChange={e => setName(e.target.value)} onFocus={() => setFocused('name')} onBlur={() => setFocused('')}
-                        style={{
-                          width: '100%', padding: '13px 14px 13px 42px', borderRadius: 12,
-                          border: `1.5px solid ${focused === 'name' ? 'rgba(129,140,248,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                          background: focused === 'name' ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.04)',
-                          color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-                          boxShadow: focused === 'name' ? '0 0 0 3px rgba(99,102,241,0.12)' : 'none',
-                          transition: 'all 0.2s'
-                        }} />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
               {/* Email */}
               <div>
@@ -198,30 +198,8 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Only show Name & Phone if Signup */}
-              <AnimatePresence>
-                {isSignUp && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, marginTop: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Phone Number</label>
-                    <div style={{ position: 'relative' }}>
-                      <Phone size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: focused === 'phone' ? '#818cf8' : '#334155', transition: 'color 0.2s', pointerEvents: 'none' }} />
-                      <input type="tel" required={isSignUp} value={phone} placeholder="+1 555-0123"
-                        onChange={e => setPhone(e.target.value)} onFocus={() => setFocused('phone')} onBlur={() => setFocused('')}
-                        style={{
-                          width: '100%', padding: '13px 14px 13px 42px', borderRadius: 12,
-                          border: `1.5px solid ${focused === 'phone' ? 'rgba(129,140,248,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                          background: focused === 'phone' ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.04)',
-                          color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-                          boxShadow: focused === 'phone' ? '0 0 0 3px rgba(99,102,241,0.12)' : 'none',
-                          transition: 'all 0.2s'
-                        }} />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
               {/* Password */}
-              <div style={{ marginTop: isSignUp ? 8 : 0 }}>
+              <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, letterSpacing: '0.07em', textTransform: 'uppercase' }}>Password</label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: focused === 'password' ? '#818cf8' : '#334155', transition: 'color 0.2s', pointerEvents: 'none' }} />
@@ -243,15 +221,13 @@ const Login = () => {
                 </div>
               </div>
 
-              {!isSignUp && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569', cursor: 'pointer' }}>
-                    <input type="checkbox" style={{ accentColor: '#6366f1', width: 14, height: 14 }} />
-                    Keep me signed in
-                  </label>
-                  <span style={{ fontSize: 13, color: '#818cf8', fontWeight: 600, cursor: 'pointer' }}>Forgot password?</span>
-                </div>
-              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569', cursor: 'pointer' }}>
+                  <input type="checkbox" style={{ accentColor: '#6366f1', width: 14, height: 14 }} />
+                  Keep me signed in
+                </label>
+                <span style={{ fontSize: 13, color: '#818cf8', fontWeight: 600, cursor: 'pointer' }}>Forgot password?</span>
+              </div>
 
               {/* Submit */}
               <motion.button type="submit" disabled={isLoading}
@@ -268,20 +244,86 @@ const Login = () => {
                   <>
                     <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.75, ease: 'linear' }}
                       style={{ width: 17, height: 17, border: '2px solid rgba(255,255,255,0.25)', borderTopColor: 'white', borderRadius: '50%', display: 'inline-block' }} />
-                    {isSignUp ? 'Creating Account...' : 'Authenticating...'}
+                    Authenticating...
                   </>
                 ) : (
                   <>
-                    {isSignUp ? 'Create Account' : 'Sign in to Portal'} 
+                    Sign in to Portal 
                     <ArrowRight size={17} />
                   </>
                 )}
               </motion.button>
             </form>
 
+            {/* Quick Access Portal Buttons */}
+            <div style={{ marginTop: 28 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 12, letterSpacing: '0.07em', textTransform: 'uppercase', textAlign: 'center' }}>
+                Quick Access (Demo)
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                {[
+                  { label: 'Super Admin', email: 'Superadmin@gmail.com', pass: 'Admin@123', color: '#6366f1' },
+                  { label: 'Admin', email: 'tenant@vivifycrm.com', pass: 'password123', color: '#8b5cf6' },
+                  { label: 'Staff', email: 'staff@vivifycrm.com', pass: 'staff123', color: '#a855f7' },
+                  { label: 'Client', email: 'client@vivifycrm.com', pass: 'client123', color: '#ec4899' }
+                ].map((role) => (
+                  <button
+                    key={role.label}
+                    onClick={() => {
+                      setEmail(role.email);
+                      setPassword(role.pass);
+                    }}
+                    style={{
+                      padding: '8px 4px',
+                      borderRadius: 10,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: `1px solid rgba(255,255,255,0.06)`,
+                      color: '#94a3b8',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.borderColor = role.color;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                      e.currentTarget.style.color = '#94a3b8';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+                    }}
+                  >
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: role.color }} />
+                    {role.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sign Up CTA */}
+            <div style={{ marginTop: 24, padding: '16px', borderRadius: 16, background: 'rgba(99,102,241,0.04)', border: '1px solid rgba(99,102,241,0.12)', textAlign: 'center' }}>
+              <p style={{ color: '#94a3b8', fontSize: 13, marginBottom: 8, fontWeight: 500 }}>New to VivifyCRM?</p>
+              <p style={{ color: 'white', fontSize: 15, fontWeight: 700, marginBottom: 12 }}>Start your <span style={{ color: '#818cf8' }}>30-day free trial</span> today.</p>
+              <motion.button 
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/register')}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: 10, background: 'rgba(129,140,248,0.1)', border: '1px solid rgba(129,140,248,0.3)',
+                  color: '#818cf8', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                }}>
+                Unlock Free Trial
+              </motion.button>
+            </div>
+
             {/* Footer */}
-            <p style={{ textAlign: 'center', marginTop: 24, fontSize: 11, color: '#1e293b' }}>
-              © 2026 VivifySoft IT · <span style={{ color: '#334155', cursor: 'pointer' }}>Privacy</span> · <span style={{ color: '#334155', cursor: 'pointer' }}>Terms</span>
+            <p style={{ textAlign: 'center', marginTop: 24, fontSize: 11, color: '#475569' }}>
+              © 2026 VivifySoft IT · <span style={{ color: '#64748b', cursor: 'pointer' }}>Privacy</span> · <span style={{ color: '#64748b', cursor: 'pointer' }}>Terms</span>
             </p>
           </div>
         </motion.div>

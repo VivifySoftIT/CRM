@@ -112,28 +112,7 @@ export default function Signup() {
           <span style={{ color: 'white', fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px' }}>Vivify<span style={{ color: '#818cf8' }}>CRM</span></span>
         </div>
 
-        {/* Stepper */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
-          {STEPS.map((s, i) => (
-            <React.Fragment key={s}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%', display: 'grid', placeItems: 'center',
-                  fontWeight: 800, fontSize: 13, transition: 'all 0.3s',
-                  background: i < step ? '#10b981' : i === step ? '#6366f1' : 'rgba(255,255,255,0.07)',
-                  color: i <= step ? 'white' : '#475569',
-                  boxShadow: i === step ? '0 0 16px rgba(99,102,241,0.5)' : 'none',
-                }}>
-                  {i < step ? <CheckCircle2 size={16} /> : i + 1}
-                </div>
-                <span style={{ fontSize: 10, fontWeight: 700, color: i === step ? '#818cf8' : '#334155', marginTop: 6, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{s}</span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div style={{ flex: 1, height: 2, background: i < step ? '#10b981' : 'rgba(255,255,255,0.07)', marginBottom: 20, transition: 'background 0.3s' }} />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
+
 
         {/* Card */}
         <div style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 24, padding: '40px 36px', backdropFilter: 'blur(24px)', boxShadow: '0 32px 64px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)' }}>

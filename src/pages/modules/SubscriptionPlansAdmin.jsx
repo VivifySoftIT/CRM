@@ -218,7 +218,7 @@ export default function SubscriptionPlansAdmin() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ minHeight: '100%' }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ minHeight: '100%', padding: '28px' }}>
       <Toast toast={toast} />
 
       {/* ── Header ── */}

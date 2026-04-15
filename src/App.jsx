@@ -18,7 +18,7 @@ import StaffClients   from './pages/staff/StaffClients';
 // ── Public Pages ─────────────────────────────────────────────────────────────
 import LandingPage  from './pages/LandingPage';
 import Login        from './pages/Login';
-import Signup       from './pages/Signup';
+import Register     from './pages/Register';
 import ProfilePage  from './pages/ProfilePage';
 
 // ── CRM Dashboard Pages ───────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ export default function App() {
           {/* ── Public ── */}
           <Route path="/"            element={<Navigate to="/login" replace />} />
           <Route path="/login"       element={<Login />} />
-          <Route path="/signup"      element={<Signup />} />
+          <Route path="/register"    element={<Register />} />
           <Route path="/profile"     element={<ProfilePage />} />
           <Route path="/onboarding"  element={<ClientOnboarding />} />
 

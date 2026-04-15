@@ -251,7 +251,7 @@ const SuperAdminLayout = () => {
         </header>
 
         {/* ── Page Content ── */}
-        <main style={{ flex: 1, overflowY: 'auto', padding: '28px 28px' }} className="custom-scrollbar">
+        <main style={{ flex: 1, overflowY: 'auto', position: 'relative' }} className="custom-scrollbar">
           <Outlet />
         </main>
       </div>

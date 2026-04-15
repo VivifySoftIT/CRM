@@ -12,10 +12,10 @@ import {
 function Toggle({ value, onChange, color = '#6366f1', size = 'md' }) {
   const W = size === 'sm' ? 36 : 44, H = size === 'sm' ? 20 : 24, D = size === 'sm' ? 16 : 20;
   return (
-    <motion.div onClick={() => onChange(!value)} animate={{ background: value ? color : '#cbd5e1' }}
+    <motion.div onClick={() => onChange(!value)} animate={{ background: value ? color : 'var(--card-border)' }}
       transition={{ duration: 0.2 }}
-      style={{ width: W, height: H, borderRadius: 99, position: 'relative', cursor: 'pointer', flexShrink: 0, boxShadow: value ? `0 2px 10px ${color}55` : 'none' }}>
-      <motion.div animate={{ x: value ? W - D - 2 : 2 }} transition={{ type: 'spring', stiffness: 600, damping: 35 }}
+      style={{ width: W, height: H, borderRadius: 99, position: 'relative', cursor: 'pointer', flexShrink: 0, boxShadow: value ? `0 2px 10px ${color}55` : 'none', border: value ? 'none' : '1px solid var(--card-border)' }}>
+      <motion.div animate={{ x: value ? W - D - 2 : (value === false && size === 'sm' ? 2 : 2) }} transition={{ type: 'spring', stiffness: 600, damping: 35 }}
         style={{ position: 'absolute', top: 2, width: D, height: D, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.25)' }} />
     </motion.div>
   );
@@ -31,9 +31,9 @@ function Tip({ text, children }) {
       <AnimatePresence>
         {show && (
           <motion.div initial={{ opacity: 0, y: 4, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }}
-            style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: '#0f172a', color: '#e2e8f0', fontSize: 11, fontWeight: 600, padding: '6px 12px', borderRadius: 8, whiteSpace: 'nowrap', zIndex: 9999, pointerEvents: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.4)', maxWidth: 240, textAlign: 'center', lineHeight: 1.5 }}>
+            style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: 'var(--text-primary)', color: 'var(--card-bg)', fontSize: 11, fontWeight: 700, padding: '6px 14px', borderRadius: 10, whiteSpace: 'nowrap', zIndex: 9999, pointerEvents: 'none', boxShadow: '0 8px 32px rgba(0,0,0,0.25)', maxWidth: 260, textAlign: 'center', lineHeight: 1.5, border: '1px solid var(--card-border)' }}>
             {text}
-            <div style={{ position: 'absolute', bottom: -4, left: '50%', transform: 'translateX(-50%)', width: 8, height: 8, background: '#0f172a', clipPath: 'polygon(0 0,100% 0,50% 100%)' }} />
+            <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%)', width: 10, height: 10, background: 'var(--text-primary)', clipPath: 'polygon(0 0,100% 0,50% 100%)' }} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -80,16 +80,19 @@ function Sel({ value, onChange, options }) {
 function Range({ value, onChange, min = 0, max = 100, step = 1, unit = '', color = '#6366f1' }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{min}{unit}</span>
-        <span style={{ fontSize: 13, fontWeight: 800, color, background: color + '15', padding: '3px 12px', borderRadius: 99, border: `1px solid ${color}25` }}>{value}{unit}</span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{max}{unit}</span>
+    <div style={{ width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700 }}>{min}{unit}</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color, background: color + '15', padding: '4px 14px', borderRadius: 99, border: `1px solid ${color}25`, backdropFilter: 'blur(4px)' }}>{value}{unit}</span>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700 }}>{max}{unit}</span>
       </div>
-      <div style={{ position: 'relative', height: 6, background: 'var(--card-border)', borderRadius: 99 }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${pct}%`, background: `linear-gradient(90deg,${color},${color}cc)`, borderRadius: 99 }} />
+      <div style={{ position: 'relative', height: 8, background: 'var(--bg-darker)', borderRadius: 99, border: '1px solid var(--card-border)' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${pct}%`, background: `linear-gradient(90deg,${color},${color}cc)`, borderRadius: 99, transition: 'width 0.1s ease-out' }} />
         <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(+e.target.value)}
-          style={{ position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer', height: '100%', margin: 0 }} />
+          style={{ 
+            position: 'absolute', inset: 0, width: '100%', opacity: 0, cursor: 'pointer', height: '100%', margin: 0,
+            WebkitAppearance: 'none'
+          }} />
       </div>
     </div>
   );
@@ -262,64 +265,96 @@ export default function GlobalSettings() {
   const activeMeta = TABS.find(t => t.id === tab);
 
   return (
-    <div style={{ minHeight:'100%', background:'var(--bg-page)', fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+    <div style={{ minHeight:'100%', background:'var(--bg-page)', fontFamily:"'Plus Jakarta Sans',sans-serif", paddingBottom: 80 }}>
       <Toasts list={toasts} />
 
       {/* ── Sticky Header ── */}
-      <div style={{ position:'sticky', top:0, zIndex:50, background:'var(--card-bg)', borderBottom:'1px solid var(--card-border)', backdropFilter:'blur(16px)' }}>
+      <div style={{ 
+        position:'sticky', top:0, zIndex:100, 
+        background:'var(--card-bg)', 
+        borderBottom:'1px solid var(--card-border)', 
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        backdropFilter:'blur(20px)',
+        WebkitBackdropFilter:'blur(20px)'
+      }}>
         {/* Title row */}
-        <div style={{ padding:'0 28px', height:64, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <div style={{ padding:'0 28px', height:72, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-            <div style={{ width:40, height:40, borderRadius:12, background:'linear-gradient(135deg,#6366f1,#8b5cf6)', display:'grid', placeItems:'center', boxShadow:'0 4px 14px rgba(99,102,241,0.4)' }}>
-              <Settings size={18} color="white" />
+            <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,#6366f1,#8b5cf6)', display:'grid', placeItems:'center', boxShadow:'0 8px 16px rgba(99,102,241,0.25)' }}>
+              <Settings size={20} color="white" />
             </div>
             <div>
-              <h1 style={{ fontSize:18, fontWeight:800, color:'var(--text-primary)', lineHeight:1.2 }}>Global Settings</h1>
-              <p style={{ fontSize:11, color:'var(--text-muted)' }}>Platform-wide configurations and system controls</p>
+              <h1 style={{ fontSize:20, fontWeight:800, color:'var(--text-primary)', lineHeight:1.2 }}>Global Settings</h1>
+              <p style={{ fontSize:12, color:'var(--text-muted)', marginTop: 2 }}>Platform-wide configurations and system controls</p>
             </div>
           </div>
-          <div style={{ display:'flex', gap:10, alignItems:'center' }}>
+          <div style={{ display:'flex', gap:12, alignItems:'center' }}>
             <AnimatePresence>
               {dirty && (
-                <motion.span initial={{ opacity:0, scale:0.8 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0 }}
-                  style={{ fontSize:11, fontWeight:700, color:'#f59e0b', background:'rgba(245,158,11,0.1)', padding:'4px 10px', borderRadius:99, border:'1px solid rgba(245,158,11,0.25)' }}>
+                <motion.span initial={{ opacity:0, scale:0.8, x: 10 }} animate={{ opacity:1, scale:1, x: 0 }} exit={{ opacity:0, scale:0.8 }}
+                  style={{ fontSize:11, fontWeight:800, color:'#f59e0b', background:'rgba(245,158,11,0.1)', padding:'6px 14px', borderRadius:99, border:'1px solid rgba(245,158,11,0.2)' }}>
                   ● Unsaved changes
                 </motion.span>
               )}
             </AnimatePresence>
             <button onClick={reset}
-              style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 16px', borderRadius:10, border:'1px solid var(--card-border)', background:'var(--bg-darker)', color:'var(--text-secondary)', fontSize:12, fontWeight:700, cursor:'pointer', transition:'all 0.15s' }}
-              onMouseOver={e => { e.currentTarget.style.borderColor='#ef4444'; e.currentTarget.style.color='#ef4444'; }}
-              onMouseOut={e => { e.currentTarget.style.borderColor='var(--card-border)'; e.currentTarget.style.color='var(--text-secondary)'; }}>
-              <RefreshCw size={13} /> Reset
+              style={{ 
+                display:'flex', alignItems:'center', gap:8, padding:'10px 18px', borderRadius:11, 
+                border:'1px solid var(--card-border)', background:'var(--bg-darker)', color:'var(--text-secondary)', 
+                fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s' 
+              }}
+              onMouseOver={e => { e.currentTarget.style.background='#ef444415'; e.currentTarget.style.borderColor='#ef444440'; e.currentTarget.style.color='#ef4444'; }}
+              onMouseOut={e => { e.currentTarget.style.background='var(--bg-darker)'; e.currentTarget.style.borderColor='var(--card-border)'; e.currentTarget.style.color='var(--text-secondary)'; }}>
+              <RefreshCw size={14} /> Reset
             </button>
             <motion.button onClick={save} whileHover={{ scale:1.02 }} whileTap={{ scale:0.97 }}
-              style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 22px', borderRadius:10, border:'none', background: dirty ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'var(--bg-darker)', color: dirty ? 'white' : 'var(--text-muted)', fontSize:13, fontWeight:700, cursor:'pointer', boxShadow: dirty ? '0 4px 16px rgba(99,102,241,0.4)' : 'none', transition:'all 0.25s' }}>
-              <Save size={14} /> Save Changes
+              style={{ 
+                display:'flex', alignItems:'center', gap:8, padding:'11px 24px', borderRadius:11, border:'none', 
+                background: dirty ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'var(--input-border)', 
+                color: dirty ? 'white' : 'var(--text-muted)', 
+                fontSize:13, fontWeight:700, cursor: dirty ? 'pointer' : 'default', 
+                boxShadow: dirty ? '0 10px 20px rgba(99,102,241,0.3)' : 'none', 
+                transition:'all 0.3s' 
+              }}>
+              <Save size={16} /> Save Changes
             </motion.button>
           </div>
         </div>
 
         {/* Tab bar */}
-        <div style={{ padding:'0 28px', display:'flex', gap:0, overflowX:'auto', scrollbarWidth:'none', borderTop:'1px solid var(--card-border)' }}>
-          {TABS.map(t => {
-            const Icon = t.icon;
-            const active = tab === t.id;
-            return (
-              <button key={t.id} onClick={() => setTab(t.id)}
-                style={{ display:'flex', alignItems:'center', gap:7, padding:'11px 18px', border:'none', background:'transparent', cursor:'pointer', fontSize:13, fontWeight: active ? 700 : 500, color: active ? t.color : 'var(--text-muted)', borderBottom:`2px solid ${active ? t.color : 'transparent'}`, marginBottom:-1, whiteSpace:'nowrap', transition:'all 0.15s', flexShrink:0 }}
-                onMouseOver={e => { if (!active) { e.currentTarget.style.color='var(--text-primary)'; e.currentTarget.style.background='var(--bg-darker)'; }}}
-                onMouseOut={e => { if (!active) { e.currentTarget.style.color='var(--text-muted)'; e.currentTarget.style.background='transparent'; }}}>
-                <Icon size={14} />
-                {t.label}
-              </button>
-            );
-          })}
+        <div style={{ position: 'relative', borderTop:'1px solid var(--card-border)' }}>
+          <div style={{ 
+            padding:'0 28px', display:'flex', gap:4, overflowX:'auto', scrollbarWidth:'none', 
+            msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch'
+          }}>
+            {TABS.map(t => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button key={t.id} onClick={() => setTab(t.id)}
+                  style={{ 
+                    display:'flex', alignItems:'center', gap:8, padding:'16px 20px', border:'none', 
+                    background:'transparent', cursor:'pointer', fontSize:13, fontWeight: active ? 800 : 600, 
+                    color: active ? t.color : 'var(--text-muted)', 
+                    borderBottom:`3px solid ${active ? t.color : 'transparent'}`, 
+                    marginBottom:-1, whiteSpace:'nowrap', transition:'all 0.2s', 
+                    flexShrink:0, position: 'relative'
+                  }}
+                  onMouseOver={e => { if (!active) { e.currentTarget.style.color='var(--text-primary)'; e.currentTarget.style.background='var(--bg-darker)'; }}}
+                  onMouseOut={e => { if (!active) { e.currentTarget.style.color='var(--text-muted)'; e.currentTarget.style.background='transparent'; }}}>
+                  <Icon size={16} />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+          {/* Scroll fade indicators */}
+          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 60, background: 'linear-gradient(90deg, transparent, var(--card-bg))', pointerEvents: 'none' }} />
         </div>
       </div>
 
       {/* ── Page Content ── */}
-      <div style={{ padding:'28px', maxWidth:860, margin:'0 auto' }}>
+      <div style={{ padding:'40px 28px', maxWidth:920, margin:'0 auto' }}>
         <AnimatePresence mode="wait">
           <motion.div key={tab} initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-6 }} transition={{ duration:0.18 }}>
 

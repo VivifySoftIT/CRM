@@ -10,6 +10,7 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { superAdminApi } from '../../utils/api';
 
 // ─── Animated Counter ────────────────────────────────────────────────────────
 function useCountUp(target, duration = 1500) {
@@ -343,13 +344,13 @@ function AlertsPanel() {
 }
 
 // ─── Org Table ────────────────────────────────────────────────────────────────
-function OrgTable() {
+function OrgTable({ orgs }) {
   const [search, setSearch]   = useState('');
   const [filter, setFilter]   = useState('All');
   const [page, setPage]       = useState(1);
   const PAGE = 5;
 
-  const filtered = ORGS.filter(o => {
+  const filtered = orgs.filter(o => {
     const q = search.toLowerCase();
     return (!q || o.name.toLowerCase().includes(q) || o.admin.toLowerCase().includes(q))
       && (filter === 'All' || o.status === filter);
@@ -460,8 +461,30 @@ function OrgTable() {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function SuperAdmin() {
+  const [orgData, setOrgData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrgs = async () => {
+      try {
+        const response = await superAdminApi.getOrganizations();
+        if (response && response.success && response.data) {
+          setOrgData(response.data);
+        } else {
+          setOrgData(ORGS);
+        }
+      } catch (err) {
+        console.error('Failed to fetch orgs:', err);
+        setOrgData(ORGS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrgs();
+  }, []);
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ minHeight: '100%' }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ minHeight: '100%', padding: '28px' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '14px' }}>
@@ -485,7 +508,7 @@ export default function SuperAdmin() {
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px', marginBottom: '20px' }}>
-        <KPICard icon={Building2}   gradient="linear-gradient(135deg,#6366f1,#8b5cf6)" label="Total Organizations"  value={142}    trend="+8%"  trendUp delay={0}    />
+        <KPICard icon={Building2}   gradient="linear-gradient(135deg,#6366f1,#8b5cf6)" label="Total Organizations"  value={isLoading ? 0 : orgData.length}    trend="+8%"  trendUp delay={0}    />
         <KPICard icon={DollarSign}  gradient="linear-gradient(135deg,#10b981,#34d399)" label="Monthly Revenue"      value={142500} prefix="$"  trend="+18%" trendUp delay={0.05} />
         <KPICard icon={CreditCard}  gradient="linear-gradient(135deg,#f59e0b,#fbbf24)" label="Active Subscriptions" value={98}     trend="+5%"  trendUp delay={0.1}  />
         <KPICard icon={ShieldCheck} gradient="linear-gradient(135deg,#3b82f6,#06b6d4)" label="Admin Activity"       value={24}     sub="Logins today"  delay={0.15} />
@@ -502,7 +525,7 @@ export default function SuperAdmin() {
         <AlertsPanel />
       </div>
 
-      <OrgTable />
+      <OrgTable orgs={isLoading ? [] : orgData.length > 0 ? orgData : ORGS} />
 
       {/* Responsive */}
       <style>{`

@@ -89,7 +89,7 @@ function Toast({ toast }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Organizations() {
-  const [orgs, setOrgs]               = useState(SEED);
+  const [orgs, setOrgs]               = useState([]);
   const [search, setSearch]           = useState('');
   const [filterPlan, setFilterPlan]   = useState('All');
   const [filterStatus, setFilterStatus] = useState('All');
@@ -100,7 +100,27 @@ export default function Organizations() {
   const [showCreate, setShowCreate]   = useState(false);
   const [confirm, setConfirm]         = useState(null);
   const [toast, setToast]             = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, setIsLoading]     = useState(true);
+
+  React.useEffect(() => {
+    const fetchOrgs = async () => {
+      try {
+        const { superAdminApi } = await import('../../utils/api');
+        const response = await superAdminApi.getOrganizations();
+        if (response && response.success && response.data) {
+          setOrgs(response.data);
+        } else {
+          setOrgs(SEED);
+        }
+      } catch (err) {
+        console.error('Failed to fetch orgs:', err);
+        setOrgs(SEED);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOrgs();
+  }, []);
 
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
@@ -185,7 +205,7 @@ export default function Organizations() {
   const activeFilters = [filterPlan !== 'All' && filterPlan, filterStatus !== 'All' && filterStatus].filter(Boolean);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', padding: '28px' }}>
       <Toast toast={toast} />
 
       {/* ── Page Header ── */}

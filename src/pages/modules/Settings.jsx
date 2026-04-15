@@ -290,368 +290,102 @@ const BrandingTab = ({ onSave, saving }) => (
         <FileUpload label="Platform Logo" hint="PNG or SVG, max 2MB" accent="#8b5cf6" />
         <FileUpload label="Favicon" hint="ICO or PNG 32×32" accent="#8b5cf6" />
       </div>
-      <div style={{ marginTop: '16px' }}>
-        <FileUpload label="Login Page Background" hint="JPG or PNG, min 1920×1080" accent="#8b5cf6" />
-      </div>
     </GCard>
     <ThemeColorPicker />
-    <GCard>
-      <SectionHeader title="Custom Domain" desc="White-label the platform under your own domain." icon={<Globe />} accent="#06b6d4" />
-      <Label>Custom Domain</Label>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <Input defaultValue="grandomni.yourcrm.com" placeholder="hotelname.yourcrm.com" />
-        <button style={{ padding: '11px 20px', borderRadius: '11px', border: 'none',
-          background: 'linear-gradient(135deg,#0f172a,#1e293b)', color: 'white',
-          fontWeight: '700', whiteSpace: 'nowrap', cursor: 'pointer', fontSize: '13px' }}>
-          Verify
-        </button>
-      </div>
-      <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-        Add a CNAME record pointing to <code style={{ background: 'var(--bg-darker)', padding: '2px 7px', borderRadius: '5px', fontFamily: 'monospace', fontSize: '12px' }}>platform.omnicrm.io</code>
-      </p>
-    </GCard>
     <SaveBar onSave={onSave} saving={saving} />
   </div>
 );
 
-const DomainTab = ({ onSave, saving }) => {
-  const [multiTenant, setMultiTenant] = useState(true);
-  const [autoSubdomain, setAutoSubdomain] = useState(true);
-  const domains = [
-    { hotel: 'Grand Omni Hotel', domain: 'grandomni.omnicrm.io', status: 'Active', ssl: 'Active' },
-    { hotel: 'Riviera Resort',   domain: 'riviera.omnicrm.io',   status: 'Active', ssl: 'Active' },
-    { hotel: 'Urban Boutique',   domain: 'urban.omnicrm.io',     status: 'Pending', ssl: 'Pending' },
-  ];
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <GCard>
-        <SectionHeader title="Tenant Configuration" icon={<Globe />} accent="#0ea5e9" />
-        <Toggle value={multiTenant} onChange={setMultiTenant} label="Enable Multi-Tenant Mode" desc="Allow multiple hotel organizations on this platform." />
-        <Toggle value={autoSubdomain} onChange={setAutoSubdomain} label="Auto-Create Subdomain" desc="Automatically generate subdomain when a new hotel is onboarded." />
-      </GCard>
-      <GCard>
-        <SectionHeader title="Domain Mapping" desc="All registered tenant domains and their SSL status." icon={<Lock />} accent="#10b981" />
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {['Hotel Name','Domain','Status','SSL','Action'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '10px 14px', fontSize: '10px', fontWeight: '900',
-                    color: 'var(--text-muted)', letterSpacing: '0.07em', background: 'var(--bg-darker)',
-                    ...(h==='Hotel Name'?{borderRadius:'10px 0 0 10px'}:h==='Action'?{borderRadius:'0 10px 10px 0'}:{}) }}>{h.toUpperCase()}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {domains.map((d,i) => (
-                <tr key={i} style={{ borderBottom: '1px solid var(--card-border)' }}>
-                  <td style={{ padding: '14px', fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>{d.hotel}</td>
-                  <td style={{ padding: '14px', fontSize: '13px', color: '#6366f1', fontFamily: 'monospace' }}>{d.domain}</td>
-                  <td style={{ padding: '14px' }}><Badge color={d.status==='Active'?'#10b981':'#f59e0b'}>{d.status}</Badge></td>
-                  <td style={{ padding: '14px' }}><Badge color={d.ssl==='Active'?'#10b981':'#f59e0b'}>{d.ssl}</Badge></td>
-                  <td style={{ padding: '14px' }}>
-                    <button style={{ padding: '6px 14px', borderRadius: '8px', border: '1.5px solid #6366f130',
-                      background: 'rgba(99,102,241,0.06)', fontSize: '12px', fontWeight: '700', cursor: 'pointer', color: '#6366f1' }}>Verify</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </GCard>
-      <SaveBar onSave={onSave} saving={saving} />
-    </div>
-  );
-};
 
 const SecurityTab = ({ onSave, saving }) => {
   const [twoFA, setTwoFA] = useState(true);
   const [specialChars, setSpecialChars] = useState(true);
   const [minLen, setMinLen] = useState(8);
   const [sessionTimeout, setSessionTimeout] = useState('30');
-  const [loginLimit, setLoginLimit] = useState(5);
-  const [ipInput, setIpInput] = useState('');
-  const [whitelist, setWhitelist] = useState(['192.168.1.1','10.0.0.0/24']);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <GCard glow="#ef4444">
-        <SectionHeader title="Password Policy" icon={<Lock />} accent="#ef4444" />
+        <SectionHeader title="Authentication" icon={<Lock />} accent="#ef4444" />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-          <div><Label>Minimum Length</Label><Input type="number" value={minLen} onChange={e => setMinLen(e.target.value)} min={6} max={32} /></div>
-          <div><Label>Login Attempt Limit</Label><Input type="number" value={loginLimit} onChange={e => setLoginLimit(e.target.value)} min={1} max={20} /></div>
+          <div><Label>Min Password Length</Label><Input type="number" value={minLen} onChange={e => setMinLen(e.target.value)} min={6} max={32} /></div>
+          <div>
+            <Label>Session Timeout</Label>
+            <Select value={sessionTimeout} onChange={e => setSessionTimeout(e.target.value)}>
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+            </Select>
+          </div>
         </div>
-        <Toggle value={specialChars} onChange={setSpecialChars} label="Require Special Characters" desc="Passwords must include at least one special character." />
-      </GCard>
-      <GCard glow="#8b5cf6">
-        <SectionHeader title="Session & 2FA" icon={<Shield />} accent="#8b5cf6" />
-        <div style={{ marginBottom: '16px' }}>
-          <Label>Session Timeout</Label>
-          <Select value={sessionTimeout} onChange={e => setSessionTimeout(e.target.value)}>
-            <option value="15">15 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="120">2 hours</option>
-          </Select>
-        </div>
-        <Toggle value={twoFA} onChange={setTwoFA} label="Enable Two-Factor Authentication (2FA)" desc="Require OTP via Email for all admin logins." />
-      </GCard>
-      <GCard>
-        <SectionHeader title="IP Whitelist" desc="Only allow logins from these IP addresses." icon={<Shield />} accent="#0ea5e9" />
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
-          <Input value={ipInput} onChange={e => setIpInput(e.target.value)} placeholder="e.g. 203.0.113.0/24" />
-          <button onClick={() => { if (ipInput) { setWhitelist([...whitelist, ipInput]); setIpInput(''); } }}
-            style={{ padding: '11px 18px', borderRadius: '11px', border: 'none',
-              background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: 'white',
-              fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px',
-              boxShadow: '0 4px 12px rgba(99,102,241,0.3)' }}>
-            <Plus size={14} /> Add
-          </button>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {whitelist.map((ip,i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--bg-darker)',
-              borderRadius: '9px', padding: '6px 12px', fontSize: '13px', fontFamily: 'monospace',
-              border: '1px solid var(--card-border)' }}>
-              {ip}
-              <X size={12} style={{ cursor: 'pointer', color: 'var(--text-muted)' }} onClick={() => setWhitelist(whitelist.filter((_,idx) => idx !== i))} />
-            </div>
-          ))}
-        </div>
+        <Toggle value={specialChars} onChange={setSpecialChars} label="Strong Passwords" desc="Require special characters in passwords." />
+        <Toggle value={twoFA} onChange={setTwoFA} label="2FA Protection" desc="Enable Two-Factor Authentication for all logins." />
       </GCard>
       <SaveBar onSave={onSave} saving={saving} />
     </div>
   );
 };
 
-const PaymentTab = ({ onSave, saving }) => {
+const BillingTab = ({ onSave, saving }) => {
   const [showRazor, setShowRazor] = useState(false);
-  const [showStripe, setShowStripe] = useState(false);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {[
-        { title:'Razorpay', desc:'Indian payment gateway integration.', accent:'#2563eb', show:showRazor, setShow:setShowRazor, key:'rzp_live_xxxxxxxxxxxx', secret:'secret_xxxxxxxxxxxx', keyLabel:'API Key', secretLabel:'API Secret' },
-        { title:'Stripe',   desc:'Global payment gateway integration.',  accent:'#6366f1', show:showStripe, setShow:setShowStripe, key:'pk_live_xxxxxxxxxxxx', secret:'sk_live_xxxxxxxxxxxx', keyLabel:'Publishable Key', secretLabel:'Secret Key' },
-      ].map(gw => (
-        <GCard key={gw.title} glow={gw.accent}>
-          <SectionHeader title={gw.title} desc={gw.desc} icon={<CreditCard />} accent={gw.accent} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div><Label>{gw.keyLabel}</Label><Input defaultValue={gw.key} /></div>
-            <div>
-              <Label>{gw.secretLabel}</Label>
-              <div style={{ position: 'relative' }}>
-                <Input type={gw.show ? 'text' : 'password'} defaultValue={gw.secret} style={{ paddingRight: '44px' }} />
-                <div onClick={() => gw.setShow(!gw.show)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                  {gw.show ? <EyeOff size={16}/> : <Eye size={16}/>}
-                </div>
+      <GCard glow="#2563eb">
+        <SectionHeader title="Payment Provider" desc="Configure your primary payment gateway." icon={<CreditCard />} accent="#2563eb" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div><Label>Razorpay Key ID</Label><Input defaultValue="rzp_live_xxxxxxxxxxxx" /></div>
+          <div>
+            <Label>Secret Key</Label>
+            <div style={{ position: 'relative' }}>
+              <Input type={showRazor ? 'text' : 'password'} defaultValue="secret_xxxxxxxxxxxx" style={{ paddingRight: '44px' }} />
+              <div onClick={() => setShowRazor(!showRazor)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                {showRazor ? <EyeOff size={16}/> : <Eye size={16}/>}
               </div>
             </div>
           </div>
-        </GCard>
-      ))}
-      <GCard>
-        <SectionHeader title="Tax & Currency" icon={<FileText />} accent="#10b981" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div>
-            <Label>Default Currency</Label>
-            <Select defaultValue="INR">
-              <option value="USD">USD — US Dollar</option>
-              <option value="INR">INR — Indian Rupee</option>
-              <option value="EUR">EUR — Euro</option>
-              <option value="GBP">GBP — British Pound</option>
-            </Select>
-          </div>
-          <div><Label>GST / Tax (%)</Label><Input type="number" defaultValue="18" min={0} max={100} /></div>
         </div>
+      </GCard>
+      <GCard glow="#10b981">
+        <SectionHeader title="Tax & Invoice" desc="Settings for generated invoices." icon={<FileText />} accent="#10b981" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+          <div><Label>Currency</Label><Select defaultValue="USD"><option value="USD">USD</option><option value="EUR">EUR</option></Select></div>
+          <div><Label>Tax Rate (%)</Label><Input type="number" defaultValue="10" /></div>
+        </div>
+        <Label>Business Address</Label>
+        <Textarea defaultValue="123 Growth Lane, Tech City" style={{ minHeight: '60px' }} />
       </GCard>
       <SaveBar onSave={onSave} saving={saving} />
     </div>
   );
 };
 
-const EmailTab = ({ onSave, saving }) => {
-  const [whatsapp, setWhatsapp] = useState(false);
-  const [activeTemplate, setActiveTemplate] = useState('booking');
-  const templates = {
-    booking: `Subject: Booking Confirmation — {{hotel_name}}\n\nDear {{guest_name}},\n\nYour booking at {{hotel_name}} is confirmed.\nCheck-in: {{checkin_date}} | Check-out: {{checkout_date}}\nRoom: {{room_type}}\n\nThank you!\n{{hotel_name}} Team`,
-    invoice: `Subject: Invoice #{{invoice_no}} — {{hotel_name}}\n\nDear {{guest_name}},\n\nPlease find attached your invoice.\nAmount Due: {{amount}}\nDue Date: {{due_date}}\n\n{{hotel_name}} Billing`,
-    reset: `Subject: Password Reset Request\n\nHi {{user_name}},\n\nClick the link below to reset your password:\n{{reset_link}}\n\nThis link expires in 30 minutes.`
-  };
+const CommunicationsTab = ({ onSave, saving }) => {
+  const [rules, setRules] = useState({ booking: true, system: true });
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <GCard glow="#0ea5e9">
-        <SectionHeader title="SMTP Configuration" desc="Outgoing email server settings." icon={<Mail />} accent="#0ea5e9" />
+        <SectionHeader title="Email Server (SMTP)" desc="Settings to send outgoing emails." icon={<Mail />} accent="#0ea5e9" />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div><Label>SMTP Host</Label><Input defaultValue="smtp.sendgrid.net" /></div>
+          <div><Label>SMTP Host</Label><Input defaultValue="smtp.mailtrap.io" /></div>
           <div><Label>SMTP Port</Label><Input type="number" defaultValue="587" /></div>
-          <div><Label>From Email</Label><Input type="email" defaultValue="noreply@omnihotel.io" /></div>
-          <div><Label>SMTP Password</Label><Input type="password" defaultValue="SG.xxxxxxxxxxxx" /></div>
         </div>
       </GCard>
-      <GCard>
-        <SectionHeader title="Email Templates" desc="Customize transactional email content." icon={<FileText />} accent="#8b5cf6" />
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '16px' }}>
-          {[['booking','Booking'],['invoice','Invoice'],['reset','Reset Password']].map(([key,label]) => (
-            <button key={key} onClick={() => setActiveTemplate(key)} style={{ padding: '7px 16px', borderRadius: '9px', border: 'none',
-              fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-              background: activeTemplate===key ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'var(--bg-darker)',
-              color: activeTemplate===key ? 'white' : 'var(--text-secondary)',
-              boxShadow: activeTemplate===key ? '0 3px 10px rgba(99,102,241,0.3)' : 'none' }}>{label}</button>
-          ))}
-        </div>
-        <Textarea value={templates[activeTemplate]} readOnly style={{ minHeight: '160px' }} />
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>
-          Use <code style={{ background: 'var(--bg-darker)', padding: '2px 6px', borderRadius: '5px' }}>{'{{variable}}'}</code> for dynamic values.
-        </p>
-      </GCard>
-      <GCard>
-        <SectionHeader title="SMS & WhatsApp" icon={<Bell />} accent="#10b981" />
-        <div style={{ marginBottom: '16px' }}><Label>SMS API Key</Label><Input defaultValue="sms_api_xxxxxxxxxxxx" /></div>
-        <Toggle value={whatsapp} onChange={setWhatsapp} label="Enable WhatsApp Notifications" desc="Send booking and payment alerts via WhatsApp Business API." />
-      </GCard>
-      <SaveBar onSave={onSave} saving={saving} />
-    </div>
-  );
-};
-
-const NotificationsTab = ({ onSave, saving }) => {
-  const [rules, setRules] = useState({ bookingConfirm:true, paymentFail:true, taskReminder:false, systemAlert:true });
-  const toggle = key => setRules(r => ({ ...r, [key]: !r[key] }));
-  const items = [
-    { key:'bookingConfirm', label:'Booking Confirmation', desc:'Notify guest and staff when a booking is confirmed.' },
-    { key:'paymentFail',    label:'Payment Failure Alert', desc:'Alert admin immediately on failed payment transactions.' },
-    { key:'taskReminder',   label:'Task Reminders',        desc:'Send reminders for overdue or upcoming tasks.' },
-    { key:'systemAlert',    label:'System Alerts',         desc:'Critical infrastructure and uptime notifications.' },
-  ];
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <GCard glow="#f59e0b">
-        <SectionHeader title="Notification Rules" desc="Control which events trigger alerts to admins and staff." icon={<Bell />} accent="#f59e0b" />
-        {items.map(item => <Toggle key={item.key} value={rules[item.key]} onChange={() => toggle(item.key)} label={item.label} desc={item.desc} />)}
+        <SectionHeader title="Alert Rules" desc="Manage when to send notifications." icon={<Bell />} accent="#f59e0b" />
+        <Toggle value={rules.booking} onChange={() => setRules(r=>({...r, booking:!r.booking}))} label="Customer Confirmations" desc="Send automated emails to clients." />
+        <Toggle value={rules.system} onChange={() => setRules(r=>({...r, system:!r.system}))} label="System Alerts" desc="Notify me about critical updates." />
       </GCard>
       <SaveBar onSave={onSave} saving={saving} />
     </div>
   );
 };
 
-const InvoiceTab = ({ onSave, saving }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <GCard glow="#10b981">
-      <SectionHeader title="Invoice Configuration" icon={<FileText />} accent="#10b981" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-        <div><Label>Invoice Prefix</Label><Input defaultValue="INV-" /></div>
-        <div><Label>GST Number</Label><Input defaultValue="27AABCU9603R1ZX" /></div>
-      </div>
-      <div style={{ marginBottom: '20px' }}><Label>Company Address</Label>
-        <Textarea defaultValue={"The Grand Omni Hotel\n123 Riviera Boulevard\nMumbai, Maharashtra 400001\nIndia"} />
-      </div>
-      <Label>Invoice Template</Label>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px', marginTop: '6px' }}>
-        {['Classic','Modern','Minimal'].map((t,i) => (
-          <div key={t} style={{ border: `2px solid ${i===1?'#6366f1':'var(--card-border)'}`, borderRadius: '14px',
-            padding: '20px', textAlign: 'center', cursor: 'pointer',
-            background: i===1 ? 'rgba(99,102,241,0.06)' : 'var(--input-bg)', transition: 'all 0.15s' }}>
-            <div style={{ height: '56px', background: i===1?'rgba(99,102,241,0.1)':'var(--bg-darker)', borderRadius: '8px', marginBottom: '10px' }} />
-            <p style={{ fontSize: '13px', fontWeight: '700', color: i===1?'#6366f1':'var(--text-secondary)' }}>{t}</p>
-            {i===1 && <p style={{ fontSize: '10px', color: '#6366f1', marginTop: '3px', fontWeight: '800' }}>✓ Selected</p>}
-          </div>
-        ))}
-      </div>
-    </GCard>
-    <SaveBar onSave={onSave} saving={saving} />
-  </div>
-);
-
-const HotelDefaultsTab = ({ onSave, saving }) => {
-  const [autoAssign, setAutoAssign] = useState(true);
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <GCard glow="#f97316">
-        <SectionHeader title="Check-in / Check-out" icon={<Building2 />} accent="#f97316" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div><Label>Default Check-in Time</Label><Input type="time" defaultValue="14:00" /></div>
-          <div><Label>Default Check-out Time</Label><Input type="time" defaultValue="11:00" /></div>
-        </div>
-      </GCard>
-      <GCard>
-        <SectionHeader title="Policies & Pricing" icon={<FileText />} accent="#8b5cf6" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-          <div>
-            <Label>Cancellation Policy</Label>
-            <Select defaultValue="48h">
-              <option value="free">Free Cancellation</option>
-              <option value="24h">24 Hours Notice</option>
-              <option value="48h">48 Hours Notice</option>
-              <option value="nonrefund">Non-Refundable</option>
-            </Select>
-          </div>
-          <div>
-            <Label>Room Pricing Rule</Label>
-            <Select defaultValue="dynamic">
-              <option value="fixed">Fixed Rate</option>
-              <option value="dynamic">Dynamic Pricing</option>
-              <option value="seasonal">Seasonal Pricing</option>
-            </Select>
-          </div>
-        </div>
-        <Toggle value={autoAssign} onChange={setAutoAssign} label="Auto-Assign Room on Booking" desc="Automatically assign the best available room upon confirmation." />
-      </GCard>
-      <SaveBar onSave={onSave} saving={saving} />
-    </div>
-  );
-};
-
-const AnalyticsTab = ({ onSave, saving }) => {
-  const [tracking, setTracking] = useState(true);
-  const [formats, setFormats] = useState({ excel:true, pdf:true });
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <GCard glow="#6366f1">
-        <SectionHeader title="Analytics Configuration" icon={<BarChart2 />} accent="#6366f1" />
-        <Toggle value={tracking} onChange={setTracking} label="Enable Platform Tracking" desc="Collect usage analytics across all tenant dashboards." />
-        <div style={{ marginTop: '20px' }}>
-          <Label>Data Retention Period</Label>
-          <Select defaultValue="90">
-            <option value="30">30 Days</option>
-            <option value="60">60 Days</option>
-            <option value="90">90 Days</option>
-            <option value="180">180 Days</option>
-          </Select>
-        </div>
-      </GCard>
-      <GCard>
-        <SectionHeader title="Export Options" desc="Choose available export formats for reports." icon={<FileText />} accent="#10b981" />
-        <div style={{ display: 'flex', gap: '12px' }}>
-          {[['excel','Excel (.xlsx)'],['pdf','PDF']].map(([key,label]) => (
-            <div key={key} onClick={() => setFormats(f => ({ ...f, [key]: !f[key] }))}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 20px',
-                borderRadius: '14px', border: `2px solid ${formats[key]?'#6366f1':'var(--card-border)'}`,
-                background: formats[key]?'rgba(99,102,241,0.06)':'var(--input-bg)', cursor: 'pointer', transition: 'all 0.15s' }}>
-              <div style={{ width: '20px', height: '20px', borderRadius: '6px',
-                background: formats[key]?'linear-gradient(135deg,#6366f1,#8b5cf6)':'var(--card-border)',
-                display: 'grid', placeItems: 'center' }}>
-                {formats[key] && <Check size={12} color="white" />}
-              </div>
-              <span style={{ fontSize: '14px', fontWeight: '700', color: formats[key]?'#6366f1':'var(--text-secondary)' }}>{label}</span>
-            </div>
-          ))}
-        </div>
-      </GCard>
-      <SaveBar onSave={onSave} saving={saving} />
-    </div>
-  );
-};
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 const TABS = [
-  { id:'branding',      label:'Branding',         icon:<Palette size={16}/>,   accent:'#8b5cf6', desc:'Logos, colors & domain' },
-  { id:'domain',        label:'Domain & Tenants',  icon:<Globe size={16}/>,     accent:'#0ea5e9', desc:'Multi-tenant config' },
-  { id:'security',      label:'Security',          icon:<Shield size={16}/>,    accent:'#ef4444', desc:'2FA, passwords, IP' },
-  { id:'payment',       label:'Payment Gateway',   icon:<CreditCard size={16}/>,accent:'#6366f1', desc:'Razorpay & Stripe' },
-  { id:'email',         label:'Email & SMS',       icon:<Mail size={16}/>,      accent:'#0ea5e9', desc:'SMTP & templates' },
-  { id:'notifications', label:'Notifications',     icon:<Bell size={16}/>,      accent:'#f59e0b', desc:'Alert rules' },
-  { id:'invoice',       label:'Invoice & Billing', icon:<FileText size={16}/>,  accent:'#10b981', desc:'Templates & tax' },
-  { id:'hotel',         label:'Hotel Defaults',    icon:<Building2 size={16}/>, accent:'#f97316', desc:'Check-in & policies' },
-  { id:'analytics',     label:'Analytics',         icon:<BarChart2 size={16}/>, accent:'#6366f1', desc:'Tracking & exports' },
+  { id:'branding',      label:'Branding',         icon:<Palette size={16}/>,   accent:'#8b5cf6', desc:'Logos & visual style' },
+  { id:'security',      label:'Security',          icon:<Shield size={16}/>,    accent:'#ef4444', desc:'Password & protection' },
+  { id:'billing',       label:'Billing & Payments',icon:<CreditCard size={16}/>,accent:'#2563eb', desc:'Tax & payment portal' },
+  { id:'comms',         label:'Communications',    icon:<Mail size={16}/>,      accent:'#0ea5e9', desc:'Emails & notifications' },
 ];
 
 // ─── Main Settings Component ──────────────────────────────────────────────────
@@ -681,16 +415,11 @@ const Settings = () => {
   const renderTab = () => {
     const props = { onSave: handleSave, saving };
     switch (activeTab) {
-      case 'branding':      return <BrandingTab {...props} />;
-      case 'domain':        return <DomainTab {...props} />;
-      case 'security':      return <SecurityTab {...props} />;
-      case 'payment':       return <PaymentTab {...props} />;
-      case 'email':         return <EmailTab {...props} />;
-      case 'notifications': return <NotificationsTab {...props} />;
-      case 'invoice':       return <InvoiceTab {...props} />;
-      case 'hotel':         return <HotelDefaultsTab {...props} />;
-      case 'analytics':     return <AnalyticsTab {...props} />;
-      default:              return null;
+      case 'branding': return <BrandingTab {...props} />;
+      case 'security': return <SecurityTab {...props} />;
+      case 'billing':  return <BillingTab {...props} />;
+      case 'comms':    return <CommunicationsTab {...props} />;
+      default:         return null;
     }
   };
 
@@ -710,7 +439,7 @@ const Settings = () => {
               <Sparkles size={18} color="white" />
             </div>
             <h1 style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.8px' }}>
-              Global Platform Settings
+              Account Settings
             </h1>
           </div>
           <p style={{ fontSize: '13px', color: 'var(--text-secondary)', paddingLeft: '46px' }}>

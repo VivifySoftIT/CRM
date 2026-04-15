@@ -82,8 +82,6 @@ const NAV_GROUPS = [
     section: 'SYSTEM / AI', icon: Settings,
     items: [
       { icon: Bot,      label: 'AI Chat Bot', path: '/dashboard/ai-bot'     },
-      { icon: Activity, label: 'Analytics',   path: '/dashboard/analytics'  },
-      { icon: Zap,      label: 'Automation',  path: '/dashboard/automation' },
       { icon: Settings, label: 'Settings',    path: '/dashboard/settings'   },
     ]
   },
